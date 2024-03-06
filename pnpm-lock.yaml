@@ -7,19 +7,37 @@ settings:
 dependencies:
   '@nestjs/common':
     specifier: ^10.0.0
-    version: 10.3.1(reflect-metadata@0.1.14)(rxjs@7.8.1)
+    version: 10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
+  '@nestjs/config':
+    specifier: ^3.1.1
+    version: 3.1.1(@nestjs/common@10.3.1)(reflect-metadata@0.1.14)
   '@nestjs/core':
     specifier: ^10.0.0
     version: 10.3.1(@nestjs/common@10.3.1)(@nestjs/platform-express@10.3.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
+  '@nestjs/jwt':
+    specifier: ^10.2.0
+    version: 10.2.0(@nestjs/common@10.3.1)
+  '@nestjs/mapped-types':
+    specifier: '*'
+    version: 2.0.4(@nestjs/common@10.3.1)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)
   '@nestjs/platform-express':
     specifier: ^10.0.0
     version: 10.3.1(@nestjs/common@10.3.1)(@nestjs/core@10.3.1)
   '@nestjs/typeorm':
     specifier: ^10.0.1
     version: 10.0.1(@nestjs/common@10.3.1)(@nestjs/core@10.3.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)(typeorm@0.3.20)
+  class-transformer:
+    specifier: ^0.5.1
+    version: 0.5.1
+  class-validator:
+    specifier: ^0.14.1
+    version: 0.14.1
   mysql2:
     specifier: ^3.9.1
     version: 3.9.1
+  redis:
+    specifier: ^4.6.13
+    version: 4.6.13
   reflect-metadata:
     specifier: ^0.1.13
     version: 0.1.14
@@ -28,7 +46,7 @@ dependencies:
     version: 7.8.1
   typeorm:
     specifier: ^0.3.20
-    version: 0.3.20(mysql2@3.9.1)(ts-node@10.9.2)
+    version: 0.3.20(mysql2@3.9.1)(redis@4.6.13)(ts-node@10.9.2)
 
 devDependencies:
   '@nestjs/cli':
@@ -920,7 +938,7 @@ packages:
       - webpack-cli
     dev: true
 
-  /@nestjs/common@10.3.1(reflect-metadata@0.1.14)(rxjs@7.8.1):
+  /@nestjs/common@10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1):
     resolution: {integrity: sha512-YuxeIlVemVQCuXMkNbBpNlmwZgp/Cu6dwCOjki63mhyYHEFX48GNNA4zZn5MFRjF4h7VSceABsScROuzsxs9LA==, tarball: https://registry.npmmirror.com/@nestjs/common/-/common-10.3.1.tgz}
     peerDependencies:
       class-transformer: '*'
@@ -933,11 +951,27 @@ packages:
       class-validator:
         optional: true
     dependencies:
+      class-transformer: 0.5.1
+      class-validator: 0.14.1
       iterare: 1.2.1
       reflect-metadata: 0.1.14
       rxjs: 7.8.1
       tslib: 2.6.2
       uid: 2.0.2
+
+  /@nestjs/config@3.1.1(@nestjs/common@10.3.1)(reflect-metadata@0.1.14):
+    resolution: {integrity: sha512-qu5QlNiJdqQtOsnB6lx4JCXPQ96jkKUsOGd+JXfXwqJqZcOSAq6heNFg0opW4pq4J/VZoNwoo87TNnx9wthnqQ==, tarball: https://registry.npmmirror.com/@nestjs/config/-/config-3.1.1.tgz}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+      reflect-metadata: ^0.1.13
+    dependencies:
+      '@nestjs/common': 10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
+      dotenv: 16.3.1
+      dotenv-expand: 10.0.0
+      lodash: 4.17.21
+      reflect-metadata: 0.1.14
+      uuid: 9.0.0
+    dev: false
 
   /@nestjs/core@10.3.1(@nestjs/common@10.3.1)(@nestjs/platform-express@10.3.1)(reflect-metadata@0.1.14)(rxjs@7.8.1):
     resolution: {integrity: sha512-mh6FwTKh2R3CmLRuB50BF5q/lzc+Mz+7qAlEvpgCiTSIfSXzbQ47vWpfgLirwkL3SlCvtFS8onxOeI69RpxvXA==, tarball: https://registry.npmmirror.com/@nestjs/core/-/core-10.3.1.tgz}
@@ -957,7 +991,7 @@ packages:
       '@nestjs/websockets':
         optional: true
     dependencies:
-      '@nestjs/common': 10.3.1(reflect-metadata@0.1.14)(rxjs@7.8.1)
+      '@nestjs/common': 10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       '@nestjs/platform-express': 10.3.1(@nestjs/common@10.3.1)(@nestjs/core@10.3.1)
       '@nuxtjs/opencollective': 0.3.2
       fast-safe-stringify: 2.1.1
@@ -970,13 +1004,42 @@ packages:
     transitivePeerDependencies:
       - encoding
 
+  /@nestjs/jwt@10.2.0(@nestjs/common@10.3.1):
+    resolution: {integrity: sha512-x8cG90SURkEiLOehNaN2aRlotxT0KZESUliOPKKnjWiyJOcWurkF3w345WOX0P4MgFzUjGoZ1Sy0aZnxeihT0g==, tarball: https://registry.npmmirror.com/@nestjs/jwt/-/jwt-10.2.0.tgz}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+    dependencies:
+      '@nestjs/common': 10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
+      '@types/jsonwebtoken': 9.0.5
+      jsonwebtoken: 9.0.2
+    dev: false
+
+  /@nestjs/mapped-types@2.0.4(@nestjs/common@10.3.1)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14):
+    resolution: {integrity: sha512-xl+gUSp0B+ln1VSNoUftlglk8dfpUes3DHGxKZ5knuBxS5g2H/8p9/DSBOYWUfO5f4u9s6ffBPZ71WO+tbe5SA==, tarball: https://registry.npmmirror.com/@nestjs/mapped-types/-/mapped-types-2.0.4.tgz}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+      class-transformer: ^0.4.0 || ^0.5.0
+      class-validator: ^0.13.0 || ^0.14.0
+      reflect-metadata: ^0.1.12
+    peerDependenciesMeta:
+      class-transformer:
+        optional: true
+      class-validator:
+        optional: true
+    dependencies:
+      '@nestjs/common': 10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
+      class-transformer: 0.5.1
+      class-validator: 0.14.1
+      reflect-metadata: 0.1.14
+    dev: false
+
   /@nestjs/platform-express@10.3.1(@nestjs/common@10.3.1)(@nestjs/core@10.3.1):
     resolution: {integrity: sha512-Rj21quI5h4Lry7q9an+nO4ADQiQUy9A6XK74o5aTUHo3Ysm25ujqh2NgU4XbT3M2oXU9qzhE59OfhkQ7ZUvTAg==, tarball: https://registry.npmmirror.com/@nestjs/platform-express/-/platform-express-10.3.1.tgz}
     peerDependencies:
       '@nestjs/common': ^10.0.0
       '@nestjs/core': ^10.0.0
     dependencies:
-      '@nestjs/common': 10.3.1(reflect-metadata@0.1.14)(rxjs@7.8.1)
+      '@nestjs/common': 10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       '@nestjs/core': 10.3.1(@nestjs/common@10.3.1)(@nestjs/platform-express@10.3.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       body-parser: 1.20.2
       cors: 2.8.5
@@ -1014,7 +1077,7 @@ packages:
       '@nestjs/platform-express':
         optional: true
     dependencies:
-      '@nestjs/common': 10.3.1(reflect-metadata@0.1.14)(rxjs@7.8.1)
+      '@nestjs/common': 10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       '@nestjs/core': 10.3.1(@nestjs/common@10.3.1)(@nestjs/platform-express@10.3.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       '@nestjs/platform-express': 10.3.1(@nestjs/common@10.3.1)(@nestjs/core@10.3.1)
       tslib: 2.6.2
@@ -1029,11 +1092,11 @@ packages:
       rxjs: ^7.2.0
       typeorm: ^0.3.0
     dependencies:
-      '@nestjs/common': 10.3.1(reflect-metadata@0.1.14)(rxjs@7.8.1)
+      '@nestjs/common': 10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       '@nestjs/core': 10.3.1(@nestjs/common@10.3.1)(@nestjs/platform-express@10.3.1)(reflect-metadata@0.1.14)(rxjs@7.8.1)
       reflect-metadata: 0.1.14
       rxjs: 7.8.1
-      typeorm: 0.3.20(mysql2@3.9.1)(ts-node@10.9.2)
+      typeorm: 0.3.20(mysql2@3.9.1)(redis@4.6.13)(ts-node@10.9.2)
       uuid: 9.0.1
     dev: false
 
@@ -1079,6 +1142,55 @@ packages:
     resolution: {integrity: sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==, tarball: https://registry.npmmirror.com/@pkgr/core/-/core-0.1.1.tgz}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
     dev: true
+
+  /@redis/bloom@1.2.0(@redis/client@1.5.14):
+    resolution: {integrity: sha512-HG2DFjYKbpNmVXsa0keLHp/3leGJz1mjh09f2RLGGLQZzSHpkmZWuwJbAvo3QcRY8p80m5+ZdXZdYOSBLlp7Cg==, tarball: https://registry.npmmirror.com/@redis/bloom/-/bloom-1.2.0.tgz}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+    dependencies:
+      '@redis/client': 1.5.14
+    dev: false
+
+  /@redis/client@1.5.14:
+    resolution: {integrity: sha512-YGn0GqsRBFUQxklhY7v562VMOP0DcmlrHHs3IV1mFE3cbxe31IITUkqhBcIhVSI/2JqtWAJXg5mjV4aU+zD0HA==, tarball: https://registry.npmmirror.com/@redis/client/-/client-1.5.14.tgz}
+    engines: {node: '>=14'}
+    dependencies:
+      cluster-key-slot: 1.1.2
+      generic-pool: 3.9.0
+      yallist: 4.0.0
+    dev: false
+
+  /@redis/graph@1.1.1(@redis/client@1.5.14):
+    resolution: {integrity: sha512-FEMTcTHZozZciLRl6GiiIB4zGm5z5F3F6a6FZCyrfxdKOhFlGkiAqlexWMBzCi4DcRoyiOsuLfW+cjlGWyExOw==, tarball: https://registry.npmmirror.com/@redis/graph/-/graph-1.1.1.tgz}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+    dependencies:
+      '@redis/client': 1.5.14
+    dev: false
+
+  /@redis/json@1.0.6(@redis/client@1.5.14):
+    resolution: {integrity: sha512-rcZO3bfQbm2zPRpqo82XbW8zg4G/w4W3tI7X8Mqleq9goQjAGLL7q/1n1ZX4dXEAmORVZ4s1+uKLaUOg7LrUhw==, tarball: https://registry.npmmirror.com/@redis/json/-/json-1.0.6.tgz}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+    dependencies:
+      '@redis/client': 1.5.14
+    dev: false
+
+  /@redis/search@1.1.6(@redis/client@1.5.14):
+    resolution: {integrity: sha512-mZXCxbTYKBQ3M2lZnEddwEAks0Kc7nauire8q20oA0oA/LoA+E/b5Y5KZn232ztPb1FkIGqo12vh3Lf+Vw5iTw==, tarball: https://registry.npmmirror.com/@redis/search/-/search-1.1.6.tgz}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+    dependencies:
+      '@redis/client': 1.5.14
+    dev: false
+
+  /@redis/time-series@1.0.5(@redis/client@1.5.14):
+    resolution: {integrity: sha512-IFjIgTusQym2B5IZJG3XKr5llka7ey84fw/NOYqESP5WUfQs9zz1ww/9+qoz4ka/S6KcGBodzlCeZ5UImKbscg==, tarball: https://registry.npmmirror.com/@redis/time-series/-/time-series-1.0.5.tgz}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+    dependencies:
+      '@redis/client': 1.5.14
+    dev: false
 
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==, tarball: https://registry.npmmirror.com/@sinclair/typebox/-/typebox-0.27.8.tgz}
@@ -1231,6 +1343,12 @@ packages:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==, tarball: https://registry.npmmirror.com/@types/json-schema/-/json-schema-7.0.15.tgz}
     dev: true
 
+  /@types/jsonwebtoken@9.0.5:
+    resolution: {integrity: sha512-VRLSGzik+Unrup6BsouBeHsf4d1hOEgYWTm/7Nmw1sXoN1+tRly/Gy/po3yeahnP4jfnQWWAhQAqcNfH7ngOkA==, tarball: https://registry.npmmirror.com/@types/jsonwebtoken/-/jsonwebtoken-9.0.5.tgz}
+    dependencies:
+      '@types/node': 20.11.16
+    dev: false
+
   /@types/methods@1.1.4:
     resolution: {integrity: sha512-ymXWVrDiCxTBE3+RIrrP533E70eA+9qu7zdWoHuOmGujkYtzf4HQF96b8nwHLqhuf4ykX61IGRIB38CC6/sImQ==, tarball: https://registry.npmmirror.com/@types/methods/-/methods-1.1.4.tgz}
     dev: true
@@ -1292,6 +1410,9 @@ packages:
     dependencies:
       '@types/superagent': 8.1.3
     dev: true
+
+  /@types/validator@13.11.8:
+    resolution: {integrity: sha512-c/hzNDBh7eRF+KbCf+OoZxKbnkpaK/cKp9iLQWqB7muXtM+MtL9SUUH8vCFcLn6dH1Qm05jiexK0ofWY7TfOhQ==, tarball: https://registry.npmmirror.com/@types/validator/-/validator-13.11.8.tgz}
 
   /@types/yargs-parser@21.0.3:
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==, tarball: https://registry.npmmirror.com/@types/yargs-parser/-/yargs-parser-21.0.3.tgz}
@@ -1889,6 +2010,10 @@ packages:
       node-int64: 0.4.0
     dev: true
 
+  /buffer-equal-constant-time@1.0.1:
+    resolution: {integrity: sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==, tarball: https://registry.npmmirror.com/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz}
+    dev: false
+
   /buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==, tarball: https://registry.npmmirror.com/buffer-from/-/buffer-from-1.1.2.tgz}
 
@@ -2001,6 +2126,16 @@ packages:
     resolution: {integrity: sha512-0TNiGstbQmCFwt4akjjBg5pLRTSyj/PkWQ1ZoO2zntmg9yLqSRxwEa4iCfQLGjqhiqBfOJa7W/E8wfGrTDmlZQ==, tarball: https://registry.npmmirror.com/cjs-module-lexer/-/cjs-module-lexer-1.2.3.tgz}
     dev: true
 
+  /class-transformer@0.5.1:
+    resolution: {integrity: sha512-SQa1Ws6hUbfC98vKGxZH3KFY0Y1lm5Zm0SY8XX9zbK7FJCyVEac3ATW0RIpwzW+oOfmHE5PMPufDG9hCfoEOMw==, tarball: https://registry.npmmirror.com/class-transformer/-/class-transformer-0.5.1.tgz}
+
+  /class-validator@0.14.1:
+    resolution: {integrity: sha512-2VEG9JICxIqTpoK1eMzZqaV+u/EiwEJkMGzTrZf6sU/fwsnOITVgYJ8yojSy6CaXtO9V0Cc6ZQZ8h8m4UBuLwQ==, tarball: https://registry.npmmirror.com/class-validator/-/class-validator-0.14.1.tgz}
+    dependencies:
+      '@types/validator': 13.11.8
+      libphonenumber-js: 1.10.55
+      validator: 13.11.0
+
   /cli-cursor@3.1.0:
     resolution: {integrity: sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==, tarball: https://registry.npmmirror.com/cli-cursor/-/cli-cursor-3.1.0.tgz}
     engines: {node: '>=8'}
@@ -2065,6 +2200,11 @@ packages:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==, tarball: https://registry.npmmirror.com/clone/-/clone-1.0.4.tgz}
     engines: {node: '>=0.8'}
     dev: true
+
+  /cluster-key-slot@1.1.2:
+    resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==, tarball: https://registry.npmmirror.com/cluster-key-slot/-/cluster-key-slot-1.1.2.tgz}
+    engines: {node: '>=0.10.0'}
+    dev: false
 
   /co@4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==, tarball: https://registry.npmmirror.com/co/-/co-4.6.0.tgz}
@@ -2332,6 +2472,16 @@ packages:
       esutils: 2.0.3
     dev: true
 
+  /dotenv-expand@10.0.0:
+    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==, tarball: https://registry.npmmirror.com/dotenv-expand/-/dotenv-expand-10.0.0.tgz}
+    engines: {node: '>=12'}
+    dev: false
+
+  /dotenv@16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==, tarball: https://registry.npmmirror.com/dotenv/-/dotenv-16.3.1.tgz}
+    engines: {node: '>=12'}
+    dev: false
+
   /dotenv@16.4.1:
     resolution: {integrity: sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==, tarball: https://registry.npmmirror.com/dotenv/-/dotenv-16.4.1.tgz}
     engines: {node: '>=12'}
@@ -2339,6 +2489,12 @@ packages:
 
   /eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==, tarball: https://registry.npmmirror.com/eastasianwidth/-/eastasianwidth-0.2.0.tgz}
+
+  /ecdsa-sig-formatter@1.0.11:
+    resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==, tarball: https://registry.npmmirror.com/ecdsa-sig-formatter/-/ecdsa-sig-formatter-1.0.11.tgz}
+    dependencies:
+      safe-buffer: 5.2.1
+    dev: false
 
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==, tarball: https://registry.npmmirror.com/ee-first/-/ee-first-1.1.1.tgz}
@@ -2842,6 +2998,11 @@ packages:
     resolution: {integrity: sha512-eeB5GfMNeevm/GRYq20ShmsaGcmI81kIX2K9XQx5miC8KdHaC6Jm0qQ8ZNeGOi7wYB8OsdxKs+Y2oVuTFuVwKQ==, tarball: https://registry.npmmirror.com/generate-function/-/generate-function-2.3.1.tgz}
     dependencies:
       is-property: 1.0.2
+    dev: false
+
+  /generic-pool@3.9.0:
+    resolution: {integrity: sha512-hymDOu5B53XvN4QT9dBmZxPX4CWhBPPLguTZ9MMFeFa/Kg0xWVfylOVNlJji/E7yTZWFd/q9GO5TxDLq156D7g==, tarball: https://registry.npmmirror.com/generic-pool/-/generic-pool-3.9.0.tgz}
+    engines: {node: '>= 4'}
     dev: false
 
   /gensync@1.0.0-beta.2:
@@ -3757,6 +3918,37 @@ packages:
       graceful-fs: 4.2.11
     dev: true
 
+  /jsonwebtoken@9.0.2:
+    resolution: {integrity: sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==, tarball: https://registry.npmmirror.com/jsonwebtoken/-/jsonwebtoken-9.0.2.tgz}
+    engines: {node: '>=12', npm: '>=6'}
+    dependencies:
+      jws: 3.2.2
+      lodash.includes: 4.3.0
+      lodash.isboolean: 3.0.3
+      lodash.isinteger: 4.0.4
+      lodash.isnumber: 3.0.3
+      lodash.isplainobject: 4.0.6
+      lodash.isstring: 4.0.1
+      lodash.once: 4.1.1
+      ms: 2.1.3
+      semver: 7.5.4
+    dev: false
+
+  /jwa@1.4.1:
+    resolution: {integrity: sha512-qiLX/xhEEFKUAJ6FiBMbes3w9ATzyk5W7Hvzpa/SLYdxNtng+gcurvrI7TbACjIXlsJyr05/S1oUhZrc63evQA==, tarball: https://registry.npmmirror.com/jwa/-/jwa-1.4.1.tgz}
+    dependencies:
+      buffer-equal-constant-time: 1.0.1
+      ecdsa-sig-formatter: 1.0.11
+      safe-buffer: 5.2.1
+    dev: false
+
+  /jws@3.2.2:
+    resolution: {integrity: sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==, tarball: https://registry.npmmirror.com/jws/-/jws-3.2.2.tgz}
+    dependencies:
+      jwa: 1.4.1
+      safe-buffer: 5.2.1
+    dev: false
+
   /keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==, tarball: https://registry.npmmirror.com/keyv/-/keyv-4.5.4.tgz}
     dependencies:
@@ -3781,6 +3973,9 @@ packages:
       type-check: 0.4.0
     dev: true
 
+  /libphonenumber-js@1.10.55:
+    resolution: {integrity: sha512-MrTg2JFLscgmTY6/oT9vopYETlgUls/FU6OaeeamGwk4LFxjIgOUML/ZSZICgR0LPYXaonVJo40lzMvaaTJlQA==, tarball: https://registry.npmmirror.com/libphonenumber-js/-/libphonenumber-js-1.10.55.tgz}
+
   /lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==, tarball: https://registry.npmmirror.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz}
     dev: true
@@ -3804,6 +3999,30 @@ packages:
       p-locate: 5.0.0
     dev: true
 
+  /lodash.includes@4.3.0:
+    resolution: {integrity: sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==, tarball: https://registry.npmmirror.com/lodash.includes/-/lodash.includes-4.3.0.tgz}
+    dev: false
+
+  /lodash.isboolean@3.0.3:
+    resolution: {integrity: sha512-Bz5mupy2SVbPHURB98VAcw+aHh4vRV5IPNhILUCsOzRmsTmSQ17jIuqopAentWoehktxGd9e/hbIXq980/1QJg==, tarball: https://registry.npmmirror.com/lodash.isboolean/-/lodash.isboolean-3.0.3.tgz}
+    dev: false
+
+  /lodash.isinteger@4.0.4:
+    resolution: {integrity: sha512-DBwtEWN2caHQ9/imiNeEA5ys1JoRtRfY3d7V9wkqtbycnAmTvRRmbHKDV4a0EYc678/dia0jrte4tjYwVBaZUA==, tarball: https://registry.npmmirror.com/lodash.isinteger/-/lodash.isinteger-4.0.4.tgz}
+    dev: false
+
+  /lodash.isnumber@3.0.3:
+    resolution: {integrity: sha512-QYqzpfwO3/CWf3XP+Z+tkQsfaLL/EnUlXWVkIk5FUPc4sBdTehEqZONuyRt2P67PXAk+NXmTBcc97zw9t1FQrw==, tarball: https://registry.npmmirror.com/lodash.isnumber/-/lodash.isnumber-3.0.3.tgz}
+    dev: false
+
+  /lodash.isplainobject@4.0.6:
+    resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==, tarball: https://registry.npmmirror.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz}
+    dev: false
+
+  /lodash.isstring@4.0.1:
+    resolution: {integrity: sha512-0wJxfxH1wgO3GrbuP+dTTk7op+6L41QCXbGINEmD+ny/G/eCqGzxyCsh7159S+mgDDcoarnBw6PC1PS5+wUGgw==, tarball: https://registry.npmmirror.com/lodash.isstring/-/lodash.isstring-4.0.1.tgz}
+    dev: false
+
   /lodash.memoize@4.1.2:
     resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==, tarball: https://registry.npmmirror.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz}
     dev: true
@@ -3812,9 +4031,12 @@ packages:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==, tarball: https://registry.npmmirror.com/lodash.merge/-/lodash.merge-4.6.2.tgz}
     dev: true
 
+  /lodash.once@4.1.1:
+    resolution: {integrity: sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==, tarball: https://registry.npmmirror.com/lodash.once/-/lodash.once-4.1.1.tgz}
+    dev: false
+
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==, tarball: https://registry.npmmirror.com/lodash/-/lodash-4.17.21.tgz}
-    dev: true
 
   /log-symbols@4.1.0:
     resolution: {integrity: sha512-8XPvpAA8uyhfteu8pIvQxpJZ7SYYdpUivZpGy6sFsBuKRY/7rQGavedeB8aK+Zkyq6upMFVL/9AW6vOYzfRyLg==, tarball: https://registry.npmmirror.com/log-symbols/-/log-symbols-4.1.0.tgz}
@@ -3843,7 +4065,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
-    dev: true
 
   /lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==, tarball: https://registry.npmmirror.com/lru-cache/-/lru-cache-7.18.3.tgz}
@@ -4424,6 +4645,17 @@ packages:
       resolve: 1.22.8
     dev: true
 
+  /redis@4.6.13:
+    resolution: {integrity: sha512-MHgkS4B+sPjCXpf+HfdetBwbRz6vCtsceTmw1pHNYJAsYxrfpOP6dz+piJWGos8wqG7qb3vj/Rrc5qOlmInUuA==, tarball: https://registry.npmmirror.com/redis/-/redis-4.6.13.tgz}
+    dependencies:
+      '@redis/bloom': 1.2.0(@redis/client@1.5.14)
+      '@redis/client': 1.5.14
+      '@redis/graph': 1.1.1(@redis/client@1.5.14)
+      '@redis/json': 1.0.6(@redis/client@1.5.14)
+      '@redis/search': 1.1.6(@redis/client@1.5.14)
+      '@redis/time-series': 1.0.5(@redis/client@1.5.14)
+    dev: false
+
   /reflect-metadata@0.1.14:
     resolution: {integrity: sha512-ZhYeb6nRaXCfhnndflDK8qI6ZQ/YcWZCISRAWICW9XYqMUwjZM9Z0DveWX/ABN01oxSHwVxKQmxeYZSsm0jh5A==, tarball: https://registry.npmmirror.com/reflect-metadata/-/reflect-metadata-0.1.14.tgz}
 
@@ -4554,7 +4786,6 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
-    dev: true
 
   /send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==, tarball: https://registry.npmmirror.com/send/-/send-0.18.0.tgz}
@@ -5090,7 +5321,7 @@ packages:
   /typedarray@0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==, tarball: https://registry.npmmirror.com/typedarray/-/typedarray-0.0.6.tgz}
 
-  /typeorm@0.3.20(mysql2@3.9.1)(ts-node@10.9.2):
+  /typeorm@0.3.20(mysql2@3.9.1)(redis@4.6.13)(ts-node@10.9.2):
     resolution: {integrity: sha512-sJ0T08dV5eoZroaq9uPKBoNcGslHBR4E4y+EBHs//SiGbblGe7IeduP/IH4ddCcj0qp3PHwDwGnuvqEAnKlq/Q==, tarball: https://registry.npmmirror.com/typeorm/-/typeorm-0.3.20.tgz}
     engines: {node: '>=16.13.0'}
     hasBin: true
@@ -5159,6 +5390,7 @@ packages:
       glob: 10.3.10
       mkdirp: 2.1.6
       mysql2: 3.9.1
+      redis: 4.6.13
       reflect-metadata: 0.2.1
       sha.js: 2.4.11
       ts-node: 10.9.2(@types/node@20.11.16)(typescript@5.3.3)
@@ -5216,6 +5448,11 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==, tarball: https://registry.npmmirror.com/utils-merge/-/utils-merge-1.0.1.tgz}
     engines: {node: '>= 0.4.0'}
 
+  /uuid@9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==, tarball: https://registry.npmmirror.com/uuid/-/uuid-9.0.0.tgz}
+    hasBin: true
+    dev: false
+
   /uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==, tarball: https://registry.npmmirror.com/uuid/-/uuid-9.0.1.tgz}
     hasBin: true
@@ -5232,6 +5469,10 @@ packages:
       '@types/istanbul-lib-coverage': 2.0.6
       convert-source-map: 2.0.0
     dev: true
+
+  /validator@13.11.0:
+    resolution: {integrity: sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==, tarball: https://registry.npmmirror.com/validator/-/validator-13.11.0.tgz}
+    engines: {node: '>= 0.10'}
 
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==, tarball: https://registry.npmmirror.com/vary/-/vary-1.1.2.tgz}
@@ -5374,7 +5615,6 @@ packages:
 
   /yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==, tarball: https://registry.npmmirror.com/yallist/-/yallist-4.0.0.tgz}
-    dev: true
 
   /yargs-parser@20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==, tarball: https://registry.npmmirror.com/yargs-parser/-/yargs-parser-20.2.9.tgz}
