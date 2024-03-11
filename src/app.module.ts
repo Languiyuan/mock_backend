@@ -13,6 +13,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { LoginGuard } from './login.guard';
 import { PermissionGuard } from './permission.guard';
 import { MockModule } from './mock/mock.module';
+import { Project } from './project/entities/project.entity';
+import { Folder } from './project/entities/Folder.entity';
+import { ProjectModule } from './project/project.module';
+import { ApiModule } from './api/api.module';
+import { Api } from './api/entities/Api.entity';
 
 @Module({
   imports: [
@@ -31,9 +36,10 @@ import { MockModule } from './mock/mock.module';
           database: configService.get('mysql_server_database'),
           synchronize: true,
           logging: true,
-          entities: [User, Role, Permission],
+          entities: [User, Role, Permission, Project, Folder, Api],
           poolSize: 10,
           connectorPackage: 'mysql2',
+          timezone: '+08:00', // 设置为你所需的时区
           extra: {
             authPlugin: 'sha256_password',
           },
@@ -56,6 +62,8 @@ import { MockModule } from './mock/mock.module';
     UserModule,
     RedisModule,
     MockModule,
+    ProjectModule,
+    ApiModule,
   ],
   controllers: [AppController],
   providers: [
