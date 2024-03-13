@@ -18,6 +18,7 @@ import { Folder } from './project/entities/Folder.entity';
 import { ProjectModule } from './project/project.module';
 import { ApiModule } from './api/api.module';
 import { Api } from './api/entities/Api.entity';
+import { UserProject } from './project/entities/UserProject.entity';
 
 @Module({
   imports: [
@@ -36,10 +37,10 @@ import { Api } from './api/entities/Api.entity';
           database: configService.get('mysql_server_database'),
           synchronize: true,
           logging: true,
-          entities: [User, Role, Permission, Project, Folder, Api],
+          entities: [User, Role, Permission, Project, Folder, Api, UserProject],
           poolSize: 10,
           connectorPackage: 'mysql2',
-          timezone: '+08:00', // 设置为你所需的时区
+          timezone: 'Asia/Beijing', // 设置为你所需的时区 没有起作用
           extra: {
             authPlugin: 'sha256_password',
           },

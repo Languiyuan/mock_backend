@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -16,6 +17,7 @@ import { RequireLogin, UserInfo } from 'src/custom.decorator';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
+  // 新增项目
   @Post('add')
   @RequireLogin()
   async add(
@@ -28,6 +30,7 @@ export class ProjectController {
     return await this.projectService.add(createProjectDto, userId);
   }
 
+  // 删除项目
   @Post('delete')
   @RequireLogin()
   async delete(
@@ -38,6 +41,27 @@ export class ProjectController {
     console.log('projectId', projectId);
 
     return await this.projectService.delete(projectId, userId);
+  }
+
+  // 获取项目详情
+  @Get('detail')
+  @RequireLogin()
+  async getDetail(
+    @Query('projectId') projectId: number,
+    @UserInfo('userId') userId: number,
+  ) {
+    console.log('userId', userId);
+    return await this.projectService.getDetail(projectId, userId);
+  }
+
+  // 获取用户下所有项目
+  @Post('list')
+  @RequireLogin()
+  async getProjectList(
+    @UserInfo('userId') userId: number,
+    @Body('type') type: string,
+  ) {
+    return await this.projectService.getProjectList(type, userId);
   }
 
   @Get()
