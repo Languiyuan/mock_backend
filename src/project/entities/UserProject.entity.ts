@@ -22,4 +22,10 @@ export class UserProject {
     default: 0,
   })
   isCreateUser: number;
+
+  @Column({
+    comment: '是否被删除',
+    default: 0,
+  })
+  isDeleted: number;
 }

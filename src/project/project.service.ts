@@ -1,9 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { UserProject } from './entities/UserProject.entity';
 
 @Injectable()
@@ -59,6 +58,7 @@ export class ProjectService {
       const newUserProject = new UserProject();
       newUserProject.userId = userId;
       newUserProject.projectId = projectId;
+      newUserProject.isCreateUser = 1;
       this.userProjectRepository.save(newUserProject);
 
       return '注册成功';
@@ -78,10 +78,15 @@ export class ProjectService {
     findProject.isDeleted = 1;
     findProject.updateUserId = userId;
 
-    console.log('findProject', findProject);
+    const userPorjectList = await this.userProjectRepository.find({
+      where: { projectId },
+    });
+
+    userPorjectList.forEach((item) => (item.isDeleted = 1));
 
     try {
       await this.projectRepository.save(findProject);
+      await this.userProjectRepository.save(userPorjectList);
       return '删除成功';
     } catch (error) {
       return '删除失败';
@@ -114,9 +119,20 @@ export class ProjectService {
   // 获取当前用户 所有项目 all || 创建的项目 create || 加入的项目 join
   async getProjectList(type: string, userId: number) {
     if (type === 'all') {
+      const allFindUserProjectList = await this.userProjectRepository.find({
+        where: { userId, isDeleted: 0 },
+      });
+      if (!allFindUserProjectList) return [];
+
+      const projectIdList = allFindUserProjectList.map(
+        (item) => item.projectId,
+      );
+
       const findProjectList: Array<CreateProjectDto> | null =
         await this.projectRepository.find({
-          where: { createUserId: userId },
+          where: {
+            id: In(projectIdList),
+          },
         });
 
       if (findProjectList) {
@@ -127,7 +143,29 @@ export class ProjectService {
     } else if (type === 'create') {
       const findProjectList: Array<CreateProjectDto> | null =
         await this.projectRepository.find({
-          where: { createUserId: userId },
+          where: { createUserId: userId, isDeleted: 0 },
+        });
+
+      if (findProjectList) {
+        return findProjectList;
+      } else {
+        return [];
+      }
+    } else if (type === 'join') {
+      const allFindUserProjectList = await this.userProjectRepository.find({
+        where: { userId, isDeleted: 0, isCreateUser: 0 },
+      });
+      if (!allFindUserProjectList) return [];
+
+      const projectIdList = allFindUserProjectList.map(
+        (item) => item.projectId,
+      );
+
+      const findProjectList: Array<CreateProjectDto> | null =
+        await this.projectRepository.find({
+          where: {
+            id: In(projectIdList),
+          },
         });
 
       if (findProjectList) {
@@ -138,19 +176,17 @@ export class ProjectService {
     }
   }
 
-  findAll() {
-    return `This action returns all project`;
-  }
+  async addProjectMember(projectId: number, memberId: number) {
+    const newUserProject = new UserProject();
+    newUserProject.projectId = projectId;
+    newUserProject.userId = memberId;
+    newUserProject.isCreateUser = 0;
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
-  }
-
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} project`;
+    try {
+      this.userProjectRepository.save(newUserProject);
+      return 'success';
+    } catch (error) {
+      throw new HttpException('添加项目成员失败', HttpStatus.BAD_REQUEST);
+    }
   }
 }

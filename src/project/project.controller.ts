@@ -1,16 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 
 @Controller('project')
@@ -37,9 +27,6 @@ export class ProjectController {
     @UserInfo('userId') userId: number,
     @Body('projectId') projectId: number,
   ) {
-    console.log('userId', userId);
-    console.log('projectId', projectId);
-
     return await this.projectService.delete(projectId, userId);
   }
 
@@ -50,11 +37,10 @@ export class ProjectController {
     @Query('projectId') projectId: number,
     @UserInfo('userId') userId: number,
   ) {
-    console.log('userId', userId);
     return await this.projectService.getDetail(projectId, userId);
   }
 
-  // 获取用户下所有项目
+  // 获取用户下所有项目  创建的项目 加入的项目
   @Post('list')
   @RequireLogin()
   async getProjectList(
@@ -64,23 +50,13 @@ export class ProjectController {
     return await this.projectService.getProjectList(type, userId);
   }
 
-  @Get()
-  findAll() {
-    return this.projectService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.projectService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectService.update(+id, updateProjectDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectService.remove(+id);
+  // 添加项目成员
+  @Post('addProjectMember')
+  @RequireLogin()
+  async addProjectMember(
+    @Body('projectId') projectId: number,
+    @Body('memberId') memberId: number,
+  ) {
+    return await this.projectService.addProjectMember(projectId, memberId);
   }
 }
