@@ -176,15 +176,31 @@ export class ProjectService {
     }
   }
 
+  // 添加项目成员
   async addProjectMember(projectId: number, memberId: number) {
-    const newUserProject = new UserProject();
-    newUserProject.projectId = projectId;
-    newUserProject.userId = memberId;
-    newUserProject.isCreateUser = 0;
-
     try {
-      this.userProjectRepository.save(newUserProject);
-      return 'success';
+      // 先去查有没有这个数据 可能是被删除的 isDeleted = 1
+      const findUserProject = await this.userProjectRepository.findOneBy({
+        userId: memberId,
+        projectId,
+      });
+
+      if (findUserProject) {
+        if (findUserProject.isDeleted) {
+          findUserProject.isDeleted = 0;
+          this.userProjectRepository.save(findUserProject);
+          return 'success';
+        } else {
+          return '该成员已在项目组中';
+        }
+      } else {
+        const newUserProject = new UserProject();
+        newUserProject.projectId = projectId;
+        newUserProject.userId = memberId;
+        newUserProject.isCreateUser = 0;
+        this.userProjectRepository.save(newUserProject);
+        return 'success';
+      }
     } catch (error) {
       throw new HttpException('添加项目成员失败', HttpStatus.BAD_REQUEST);
     }
