@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { In, Repository } from 'typeorm';
 import { UserProject } from './entities/UserProject.entity';
+import { User } from 'src/user/entities/User.entity';
 
 @Injectable()
 export class ProjectService {
@@ -13,6 +14,9 @@ export class ProjectService {
   // 项目用户关系表
   @InjectRepository(UserProject)
   private userProjectRepository: Repository<UserProject>;
+  // 用户表
+  @InjectRepository(User)
+  private userRepository: Repository<User>;
 
   // 创建项目
   async add(createProjectDto: CreateProjectDto, userId: number) {
@@ -179,6 +183,19 @@ export class ProjectService {
   // 添加项目成员
   async addProjectMember(projectId: number, memberId: number) {
     try {
+      // 判断项目和成员是否存在
+      const findProject = await this.projectRepository.findOneBy({
+        id: projectId,
+      });
+      if (!findProject) {
+        throw new HttpException('该项目不存在', HttpStatus.BAD_REQUEST);
+      }
+
+      const findMember = await this.userRepository.findOneBy({ id: memberId });
+      if (!findMember) {
+        throw new HttpException('该成员不存在', HttpStatus.BAD_REQUEST);
+      }
+
       // 先去查有没有这个数据 可能是被删除的 isDeleted = 1
       const findUserProject = await this.userProjectRepository.findOneBy({
         userId: memberId,
@@ -202,7 +219,43 @@ export class ProjectService {
         return 'success';
       }
     } catch (error) {
-      throw new HttpException('添加项目成员失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || '添加项目成员失败',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  // 删除项目成员
+  async removeProjectMember(
+    projectId: number,
+    memberId: number,
+    userId: number,
+  ) {
+    // 需要判断 当前用户是否是项目创建者，是否有权限
+    const findUserProject = await this.userProjectRepository.findOneBy({
+      userId,
+      projectId,
+    });
+
+    if (findUserProject.isCreateUser === 0) {
+      throw new HttpException(
+        '当前用户非项目创建者, 无删除权限',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const findMemberIdProject = await this.userProjectRepository.findOneBy({
+      userId: memberId,
+      projectId,
+    });
+
+    if (findMemberIdProject && findMemberIdProject?.isDeleted === 0) {
+      findMemberIdProject.isDeleted = 1;
+      await this.userProjectRepository.save(findMemberIdProject);
+      return '删除成功';
+    } else {
+      throw new HttpException('该成员不是项目成员', HttpStatus.BAD_REQUEST);
     }
   }
 }

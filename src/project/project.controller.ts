@@ -59,4 +59,19 @@ export class ProjectController {
   ) {
     return await this.projectService.addProjectMember(projectId, memberId);
   }
+
+  // 删除项目成员
+  @Post('removeProjectMember')
+  @RequireLogin()
+  async removeProjectMember(
+    @Body('projectId') projectId: number,
+    @Body('memberId') memberId: number,
+    @UserInfo('userId') userId: number,
+  ) {
+    return await this.projectService.removeProjectMember(
+      projectId,
+      memberId,
+      userId,
+    );
+  }
 }
