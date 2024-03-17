@@ -329,4 +329,15 @@ export class ProjectService {
     await this.folderRepository.save(findFolder);
     return '修改项目名称成功';
   }
+
+  // 查询所有该项目目录
+  async queryFolderList(projectId: number) {
+    const findFolderList = await this.folderRepository.find({
+      where: {
+        projectId,
+      },
+    });
+
+    return findFolderList;
+  }
 }

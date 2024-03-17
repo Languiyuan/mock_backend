@@ -113,4 +113,11 @@ export class ProjectController {
   ) {
     return await this.projectService.editFolder(userId, id, folderName);
   }
+
+  // 查询项目目录
+  @Post('queryFolderList')
+  @RequireLogin()
+  async queryFolderList(@Body('projectId') projectId: number) {
+    return await this.projectService.queryFolderList(projectId);
+  }
 }
