@@ -92,4 +92,25 @@ export class ProjectController {
   ) {
     return await this.projectService.addFolder(userId, folderDto);
   }
+
+  // 删除目录
+  @Post('removeFolder')
+  @RequireLogin()
+  async removeFolder(
+    @UserInfo('userId') userId: number,
+    @Body('id') id: number,
+  ) {
+    return await this.projectService.removeFolder(userId, id);
+  }
+
+  // 编辑项目目录名字
+  @Post('editFolder')
+  @RequireLogin()
+  async editFolder(
+    @UserInfo('userId') userId: number,
+    @Body('id') id: number,
+    @Body('folderName') folderName: string,
+  ) {
+    return await this.projectService.editFolder(userId, id, folderName);
+  }
 }

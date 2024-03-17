@@ -285,8 +285,17 @@ export class ProjectService {
       const sameFolder = findFolderList.find(
         (item) => item.name === folderDto.folderName,
       );
-      if (sameFolder) {
+
+      if (sameFolder && !sameFolder.isDeleted) {
         throw new HttpException('已存在同名目录', HttpStatus.BAD_REQUEST);
+      }
+      // 如果添加目录曾经被删除
+      if (sameFolder && sameFolder.isDeleted) {
+        sameFolder.isDeleted = 0;
+        sameFolder.createUserId = userId;
+        sameFolder.updateUserId = userId;
+        await this.folderRepository.save(sameFolder);
+        return '创建目录成功';
       }
     }
 
@@ -298,5 +307,26 @@ export class ProjectService {
 
     await this.folderRepository.save(newFolder);
     return '创建目录成功';
+  }
+
+  // 删除项目目录
+  async removeFolder(userId: number, id: number) {
+    const findFolder = await this.folderRepository.findOneBy({ id });
+    findFolder.isDeleted = 1;
+    findFolder.updateUserId = userId;
+
+    await this.folderRepository.save(findFolder);
+    // TODO 删除api中的目录项目key
+    return '删除目录成功';
+  }
+
+  // 编辑项目目录名字
+  async editFolder(userId: number, id: number, folderName: string) {
+    const findFolder = await this.folderRepository.findOneBy({ id });
+    findFolder.name = folderName;
+    findFolder.updateUserId = userId;
+
+    await this.folderRepository.save(findFolder);
+    return '修改项目名称成功';
   }
 }
