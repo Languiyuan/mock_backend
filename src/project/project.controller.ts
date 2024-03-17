@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
+import { FolderDto } from './dto/Folder.dto';
 
 @Controller('project')
 export class ProjectController {
@@ -73,5 +74,22 @@ export class ProjectController {
       memberId,
       userId,
     );
+  }
+
+  // 查询项目成员
+  @Post('queryMembers')
+  @RequireLogin()
+  async queryMembers(@Body('projectId') projectId: number) {
+    return await this.projectService.queryMembers(projectId);
+  }
+
+  // 添加目录
+  @Post('addFolder')
+  @RequireLogin()
+  async addFolder(
+    @UserInfo('userId') userId: number,
+    @Body() folderDto: FolderDto,
+  ) {
+    return await this.projectService.addFolder(userId, folderDto);
   }
 }

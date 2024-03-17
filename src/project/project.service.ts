@@ -5,6 +5,8 @@ import { Project } from './entities/project.entity';
 import { In, Repository } from 'typeorm';
 import { UserProject } from './entities/UserProject.entity';
 import { User } from 'src/user/entities/User.entity';
+import { Folder } from './entities/Folder.entity';
+import { FolderDto } from './dto/Folder.dto';
 
 @Injectable()
 export class ProjectService {
@@ -17,6 +19,9 @@ export class ProjectService {
   // 用户表
   @InjectRepository(User)
   private userRepository: Repository<User>;
+  // 项目目录表
+  @InjectRepository(Folder)
+  private folderRepository: Repository<Folder>;
 
   // 创建项目
   async add(createProjectDto: CreateProjectDto, userId: number) {
@@ -257,5 +262,41 @@ export class ProjectService {
     } else {
       throw new HttpException('该成员不是项目成员', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  // 查询项目成员包含项目创建者
+  async queryMembers(projectId: number) {
+    const findMembers = await this.userProjectRepository.find({
+      where: { projectId, isDeleted: 0 },
+    });
+    return findMembers;
+  }
+
+  // 添加项目目录
+  async addFolder(userId: number, folderDto: FolderDto) {
+    // 是否有权限 前端限制
+    const findFolderList = await this.folderRepository.find({
+      where: {
+        projectId: folderDto.projectId,
+      },
+    });
+
+    if (findFolderList && findFolderList.length) {
+      const sameFolder = findFolderList.find(
+        (item) => item.name === folderDto.folderName,
+      );
+      if (sameFolder) {
+        throw new HttpException('已存在同名目录', HttpStatus.BAD_REQUEST);
+      }
+    }
+
+    const newFolder = new Folder();
+    newFolder.name = folderDto.folderName;
+    newFolder.projectId = folderDto.projectId;
+    newFolder.createUserId = userId;
+    newFolder.updateUserId = userId;
+
+    await this.folderRepository.save(newFolder);
+    return '创建目录成功';
   }
 }
