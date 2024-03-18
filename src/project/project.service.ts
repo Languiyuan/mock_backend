@@ -211,7 +211,7 @@ export class ProjectService {
         if (findUserProject.isDeleted) {
           findUserProject.isDeleted = 0;
           this.userProjectRepository.save(findUserProject);
-          return 'success';
+          return '添加成功';
         } else {
           return '该成员已在项目组中';
         }
@@ -221,7 +221,7 @@ export class ProjectService {
         newUserProject.userId = memberId;
         newUserProject.isCreateUser = 0;
         this.userProjectRepository.save(newUserProject);
-        return 'success';
+        return '添加成功';
       }
     } catch (error) {
       throw new HttpException(
