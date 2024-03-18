@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Api } from './entities/Api.entity';
 import { Like, Repository } from 'typeorm';
 import { UserProject } from 'src/project/entities/UserProject.entity';
+import { ApiHistory } from './entities/ApiHistory.entity';
 
 @Injectable()
 export class ApiService {
@@ -13,6 +14,9 @@ export class ApiService {
   // 项目成员表
   @InjectRepository(UserProject)
   private userProjectRespository: Repository<UserProject>;
+  // api history respository
+  @InjectRepository(ApiHistory)
+  private apiHistoryRepository: Repository<ApiHistory>;
 
   // 添加接口
   async addApi(userId: number, apiDto: ApiDto) {
@@ -39,6 +43,29 @@ export class ApiService {
     newApi.updateUserId = userId;
 
     await this.apiRespository.save(newApi);
+
+    // 添加到历史记录中
+    const findApi = await this.apiRespository.findOneBy({
+      projectId: apiDto.projectId,
+      url: apiDto.url,
+    });
+    if (findApi) {
+      const newApiHistory = new ApiHistory();
+      newApiHistory.operateType = '新增';
+      newApiHistory.apiId = findApi.id;
+      newApiHistory.projectId = apiDto.projectId;
+      newApiHistory.folderId = apiDto.folderId;
+      newApiHistory.name = apiDto.name;
+      newApiHistory.url = apiDto.url;
+      newApiHistory.mockRule = apiDto.mockRule;
+      newApiHistory.method = apiDto.method;
+      newApiHistory.delay = apiDto.delay;
+      newApiHistory.description = apiDto.description;
+      newApiHistory.on = apiDto.on;
+      newApiHistory.createUserId = userId;
+      newApiHistory.updateUserId = userId;
+      await this.apiHistoryRepository.save(newApiHistory);
+    }
     return '添加成功';
   }
 
@@ -69,7 +96,6 @@ export class ApiService {
   }
 
   // 编辑接口
-  // TODO 增加历史记录查询功能和应用功能，但是可以限制最多保存5 或者 10条历史记录
   async editApi(userId: number, apiDto: ApiDto) {
     // 判断用户是否有权限 是否是项目成员
     const findMember = await this.userProjectRespository.findOneBy({
@@ -83,6 +109,26 @@ export class ApiService {
         projectId: apiDto.projectId,
       });
 
+      // 如果mockRule 修改
+      // TODO 限制历史条数
+      if (findApi.mockRule !== apiDto.mockRule) {
+        const newApiHistory = new ApiHistory();
+        newApiHistory.operateType = '修改';
+        newApiHistory.apiId = findApi.id;
+        newApiHistory.projectId = apiDto.projectId;
+        newApiHistory.folderId = apiDto.folderId;
+        newApiHistory.name = apiDto.name;
+        newApiHistory.url = apiDto.url;
+        newApiHistory.mockRule = apiDto.mockRule;
+        newApiHistory.method = apiDto.method;
+        newApiHistory.delay = apiDto.delay;
+        newApiHistory.description = apiDto.description;
+        newApiHistory.on = apiDto.on;
+        newApiHistory.createUserId = userId;
+        newApiHistory.updateUserId = userId;
+        await this.apiHistoryRepository.save(newApiHistory);
+      }
+
       if (findApi) {
         findApi.folderId = apiDto.folderId;
         findApi.name = apiDto.name;
@@ -95,6 +141,7 @@ export class ApiService {
         findApi.updateUserId = userId;
 
         await this.apiRespository.save(findApi);
+
         return '编辑成功';
       } else {
         throw new HttpException('api不存在', HttpStatus.BAD_REQUEST);
