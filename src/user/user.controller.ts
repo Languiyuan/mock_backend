@@ -229,7 +229,7 @@ export class UserController {
     return await this.userService.update(userId, updateUserDto);
   }
 
-  @Get('freeze') 
+  @Get('freeze')
   @RequireLogin()
   async freeze(@UserInfo('userId') userId: number) {
     return await this.userService.freeze(userId);

@@ -30,8 +30,9 @@ export class Api {
 
   @Column({
     comment: '所属的目录的id',
+    nullable: true,
   })
-  folderId: number;
+  folderId: number | null;
 
   @Column({
     length: 100,
@@ -59,6 +60,7 @@ export class Api {
 
   @Column({
     comment: '接口返回延迟',
+    default: 0,
   })
   delay: number;
 

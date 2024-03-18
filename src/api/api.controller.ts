@@ -1,34 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { ApiService } from './api.service';
-import { CreateApiDto } from './dto/create-api.dto';
-import { UpdateApiDto } from './dto/update-api.dto';
+import { RequireLogin, UserInfo } from 'src/custom.decorator';
+import { ApiDto } from './dto/api.dto';
 
 @Controller('api')
 export class ApiController {
   constructor(private readonly apiService: ApiService) {}
 
-  @Post()
-  create(@Body() createApiDto: CreateApiDto) {
-    return this.apiService.create(createApiDto);
+  // 添加接口
+  @Post('add')
+  @RequireLogin()
+  async addApi(@UserInfo('userId') userId: number, @Body() apiDto: ApiDto) {
+    return await this.apiService.addApi(userId, apiDto);
   }
 
-  @Get()
-  findAll() {
-    return this.apiService.findAll();
+  // 删除接口
+  @Post('remove')
+  @RequireLogin()
+  async removeApi(
+    @UserInfo('userId') userId: number,
+    @Body('id') id: number,
+    @Body('projectId') projectId: number,
+  ) {
+    return await this.apiService.removeApi(userId, id, projectId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.apiService.findOne(+id);
+  // 编辑接口
+  @Post('edit')
+  @RequireLogin()
+  async editApi(@UserInfo('userId') userId: number, @Body() apiDto: ApiDto) {
+    return await this.apiService.editApi(userId, apiDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateApiDto: UpdateApiDto) {
-    return this.apiService.update(+id, updateApiDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.apiService.remove(+id);
+  // 查询api列表接口
+  @Post('query')
+  @RequireLogin()
+  async queryApi(
+    @UserInfo('userId') userId: number,
+    @Body('projectId') projectId: number,
+    @Body('folderId') folderId: number,
+    @Body('name') name: string,
+    @Body('url') url: string,
+    @Body('pageNo') pageNo: number,
+    @Body('pageSize') pageSize: number,
+  ) {
+    return await this.apiService.queryApi(
+      userId,
+      projectId,
+      folderId,
+      name,
+      url,
+      pageNo,
+      pageSize,
+    );
   }
 }
