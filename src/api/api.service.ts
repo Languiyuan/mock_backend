@@ -194,4 +194,9 @@ export class ApiService {
 
     return { findApis, totalCount };
   }
+
+  // 查询接口详情
+  async queryApiDetail(id: number) {
+    return await this.apiRespository.findOneBy({ id });
+  }
 }

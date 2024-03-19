@@ -54,4 +54,11 @@ export class ApiController {
       pageSize,
     );
   }
+
+  // 查询单个接口的详情
+  @Post('queryApiDetail')
+  @RequireLogin()
+  async queryApiDetail(@Body('id') id: number) {
+    return await this.apiService.queryApiDetail(id);
+  }
 }
