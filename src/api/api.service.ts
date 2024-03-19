@@ -213,4 +213,11 @@ export class ApiService {
   async queryApiDetail(id: number) {
     return await this.apiRespository.findOneBy({ id });
   }
+
+  // 查询历史记录
+  async queryHistory(apiId: number) {
+    return await this.apiHistoryRepository.find({
+      where: { apiId },
+    });
+  }
 }

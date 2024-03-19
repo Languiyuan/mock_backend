@@ -61,4 +61,10 @@ export class ApiController {
   async queryApiDetail(@Body('id') id: number) {
     return await this.apiService.queryApiDetail(id);
   }
+
+  @Post('queryHistory')
+  @RequireLogin()
+  async queryHistory(@Body('id') id: number) {
+    return await this.apiService.queryHistory(id);
+  }
 }
