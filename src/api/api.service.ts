@@ -220,4 +220,17 @@ export class ApiService {
       where: { apiId },
     });
   }
+
+  // 移动api到其他目录
+  async moveApi(userId: number, id: number, folderId: number) {
+    const findApi = await this.apiRespository.findOneBy({ id });
+    if (findApi) {
+      findApi.folderId = folderId;
+      findApi.updateUserId = userId;
+      await this.apiRespository.save(findApi);
+      return '移动成功';
+    } else {
+      throw new HttpException('api不存在', HttpStatus.BAD_REQUEST);
+    }
+  }
 }

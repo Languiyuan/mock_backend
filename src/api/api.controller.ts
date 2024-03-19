@@ -62,9 +62,20 @@ export class ApiController {
     return await this.apiService.queryApiDetail(id);
   }
 
+  // 查询api历史
   @Post('queryHistory')
   @RequireLogin()
   async queryHistory(@Body('id') id: number) {
     return await this.apiService.queryHistory(id);
+  }
+
+  @Post('moveApi')
+  @RequireLogin()
+  async moveApi(
+    @UserInfo('userId') userId: number,
+    @Body('id') id: number,
+    @Body('folderId') folderId: number,
+  ) {
+    return await this.apiService.moveApi(userId, id, folderId);
   }
 }
