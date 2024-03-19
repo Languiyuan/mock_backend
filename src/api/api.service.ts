@@ -110,8 +110,22 @@ export class ApiService {
       });
 
       // 如果mockRule 修改
-      // TODO 限制历史条数
       if (findApi.mockRule !== apiDto.mockRule) {
+        // 查所有历史记录数量
+        const historyQueryBuilder = this.apiHistoryRepository
+          .createQueryBuilder()
+          .where('apiId = :apiId', { apiId: findApi.id });
+
+        const historyCount = await historyQueryBuilder.getCount();
+        // 限制数量5条
+        if (historyCount >= 5) {
+          const findLastHistory = await historyQueryBuilder
+            .orderBy('id', 'ASC')
+            .getOne();
+
+          await this.apiHistoryRepository.delete(findLastHistory.id);
+        }
+
         const newApiHistory = new ApiHistory();
         newApiHistory.operateType = '修改';
         newApiHistory.apiId = findApi.id;
