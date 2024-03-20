@@ -19,6 +19,12 @@ export class Api {
   projectId: number;
 
   @Column({
+    length: 50,
+    comment: '项目凭证id',
+  })
+  projectSign: string;
+
+  @Column({
     comment: '创建者id',
   })
   createUserId: number;

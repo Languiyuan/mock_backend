@@ -5,6 +5,7 @@ import { Api } from './entities/Api.entity';
 import { Like, Repository } from 'typeorm';
 import { UserProject } from 'src/project/entities/UserProject.entity';
 import { ApiHistory } from './entities/ApiHistory.entity';
+import { Project } from 'src/project/entities/project.entity';
 
 @Injectable()
 export class ApiService {
@@ -17,6 +18,9 @@ export class ApiService {
   // api history respository
   @InjectRepository(ApiHistory)
   private apiHistoryRepository: Repository<ApiHistory>;
+  // 项目表
+  @InjectRepository(Project)
+  private projectRepository: Repository<Project>;
 
   // 添加接口
   async addApi(userId: number, apiDto: ApiDto) {
@@ -28,8 +32,19 @@ export class ApiService {
     if (findApiByUrl) {
       throw new HttpException('添加失败,url不能重复', HttpStatus.BAD_REQUEST);
     }
+    // 查project sign
+    const project = await this.projectRepository.findOneBy({
+      id: apiDto.projectId,
+    });
+    if (!project) {
+      throw new HttpException(
+        '添加失败,projectId error',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     const newApi = new Api();
+    newApi.projectSign = project.sign;
     newApi.projectId = apiDto.projectId;
     newApi.folderId = apiDto.folderId;
     newApi.name = apiDto.name;
@@ -53,6 +68,7 @@ export class ApiService {
       const newApiHistory = new ApiHistory();
       newApiHistory.operateType = '新增';
       newApiHistory.apiId = findApi.id;
+      newApiHistory.projectSign = project.sign;
       newApiHistory.projectId = apiDto.projectId;
       newApiHistory.folderId = apiDto.folderId;
       newApiHistory.name = apiDto.name;
@@ -129,6 +145,7 @@ export class ApiService {
         const newApiHistory = new ApiHistory();
         newApiHistory.operateType = '修改';
         newApiHistory.apiId = findApi.id;
+        newApiHistory.projectSign = findApi.projectSign;
         newApiHistory.projectId = apiDto.projectId;
         newApiHistory.folderId = apiDto.folderId;
         newApiHistory.name = apiDto.name;
