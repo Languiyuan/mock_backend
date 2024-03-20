@@ -1,26 +1,26 @@
-import { Injectable } from '@nestjs/common';
-import { CreateMockDto } from './dto/create-mock.dto';
-import { UpdateMockDto } from './dto/update-mock.dto';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Api } from 'src/api/entities/Api.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class MockService {
-  create(createMockDto: CreateMockDto) {
-    return 'This action adds a new mock';
-  }
+  @InjectRepository(Api)
+  private apiRepository: Repository<Api>;
 
-  findAll() {
-    return `This action returns all mock`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} mock`;
-  }
-
-  update(id: number, updateMockDto: UpdateMockDto) {
-    return `This action updates a #${id} mock`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} mock`;
+  async handlePost(projectSign: string, url: string) {
+    const findMockRuleList = await this.apiRepository.find({
+      select: ['mockRule'],
+      where: { projectSign, url },
+    });
+    if (findMockRuleList.length) {
+      const mockRule = findMockRuleList[0].mockRule;
+      return mockRule;
+    } else {
+      throw new HttpException(
+        '接口路径错误,检查路径和请求方法',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

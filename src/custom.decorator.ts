@@ -17,3 +17,5 @@ export const UserInfo = createParamDecorator(
     return data ? request.user[data] : request.user;
   },
 );
+
+export const NotFormatResponse = () => SetMetadata('not-format-response', true);

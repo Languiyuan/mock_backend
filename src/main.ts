@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { ConfigService } from '@nestjs/config';
@@ -11,7 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalInterceptors(new FormatResponseInterceptor());
+  app.useGlobalInterceptors(new FormatResponseInterceptor(new Reflector()));
   app.useGlobalInterceptors(new InvokeRecordInterceptor());
   app.useGlobalFilters(new UnloginFilter());
   app.useGlobalFilters(new CustomExceptionFilter());
