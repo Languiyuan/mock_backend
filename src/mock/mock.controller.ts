@@ -7,6 +7,7 @@ import {
   Res,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { MockService } from './mock.service';
 import { Request, Response } from 'express';
@@ -37,7 +38,21 @@ export class MockController {
   }
 
   @Get('*')
-  findAll() {
-    return '123123';
+  async handleGet(
+    @Query() queryData: any,
+    @Req() request: Request,
+    @Res() res: Response,
+  ) {
+    // 设置返回头的 Content-Type
+    res.type('application/json');
+
+    const routePathList = request.path.split('/').slice(1);
+    if (routePathList.length <= 2) {
+      throw new HttpException('接口路径错误', HttpStatus.BAD_REQUEST);
+    }
+    const projectSign: string = routePathList[1];
+    const url: string = `/${routePathList.slice(2).join('/')}`;
+    const data = await this.mockService.handleGet(projectSign, url);
+    res.send(data);
   }
 }
