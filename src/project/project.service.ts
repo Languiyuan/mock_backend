@@ -82,7 +82,16 @@ export class ProjectService {
       id: projectId,
     });
 
-    if (!findProject) return '项目不存在';
+    if (!findProject) {
+      throw new HttpException('该项目不存在', HttpStatus.BAD_REQUEST);
+    }
+
+    if (findProject.createUserId !== userId) {
+      throw new HttpException(
+        '当前用户非创建者无权限删除该项目',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     findProject.isDeleted = 1;
     findProject.updateUserId = userId;
@@ -98,7 +107,7 @@ export class ProjectService {
       await this.userProjectRepository.save(userPorjectList);
       return '删除成功';
     } catch (error) {
-      return '删除失败';
+      throw new HttpException('删除失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
