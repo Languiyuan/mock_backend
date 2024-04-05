@@ -151,6 +151,9 @@ export class ProjectService {
           where: {
             id: In(projectIdList),
           },
+          order: {
+            createTime: 'DESC', // 根据 updateTime 字段倒序排列
+          },
         });
 
       if (findProjectList) {
@@ -162,6 +165,9 @@ export class ProjectService {
       const findProjectList: Array<CreateProjectDto> | null =
         await this.projectRepository.find({
           where: { createUserId: userId, isDeleted: 0 },
+          order: {
+            createTime: 'DESC', // 根据 updateTime 字段倒序排列
+          },
         });
 
       if (findProjectList) {
@@ -183,6 +189,9 @@ export class ProjectService {
         await this.projectRepository.find({
           where: {
             id: In(projectIdList),
+          },
+          order: {
+            createTime: 'DESC', // 根据 updateTime 字段倒序排列
           },
         });
 
