@@ -59,10 +59,9 @@ export class ProjectService {
         .getRawOne();
       console.log('projectId---', projectId);
 
-      const data = await this.projectRepository.findOneBy({
-        sign: newProject.sign,
-      });
-      console.log('data', data);
+      // const data = await this.projectRepository.findOneBy({
+      //   sign: newProject.sign,
+      // });
 
       const newUserProject = new UserProject();
       newUserProject.userId = userId;
@@ -72,7 +71,7 @@ export class ProjectService {
 
       return '注册成功';
     } catch (error) {
-      return '注册失败';
+      throw new HttpException('创建失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
   // 删除项目
@@ -130,7 +129,7 @@ export class ProjectService {
         );
       }
     } else {
-      return '项目不存在';
+      throw new HttpException('项目不存在', HttpStatus.BAD_REQUEST);
     }
   }
 
