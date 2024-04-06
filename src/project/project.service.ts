@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateProjectDto } from './dto/create-project.dto';
+import { CreateProjectDto, EditProjectDto } from './dto/create-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { In, Repository } from 'typeorm';
@@ -25,9 +25,6 @@ export class ProjectService {
 
   // 创建项目
   async add(createProjectDto: CreateProjectDto, userId: number) {
-    console.log(createProjectDto);
-    console.log('userId', userId);
-
     function generateRandomString(length: number) {
       const characters =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -57,7 +54,6 @@ export class ProjectService {
         .select(['id'])
         .where('sign = :sign', { sign: newProject.sign })
         .getRawOne();
-      console.log('projectId---', projectId);
 
       // const data = await this.projectRepository.findOneBy({
       //   sign: newProject.sign,
@@ -69,7 +65,7 @@ export class ProjectService {
       newUserProject.isCreateUser = 1;
       this.userProjectRepository.save(newUserProject);
 
-      return '注册成功';
+      return '创建成功';
     } catch (error) {
       throw new HttpException('创建失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -110,6 +106,37 @@ export class ProjectService {
     }
   }
 
+  // 编辑项目
+  async edit(editProjectDto: EditProjectDto, userId: number) {
+    // 查找数据
+    const findProject = await this.projectRepository.findOneBy({
+      id: editProjectDto.projectId,
+    });
+
+    if (!findProject) {
+      throw new HttpException('该项目不存在', HttpStatus.BAD_REQUEST);
+    }
+
+    if (findProject.createUserId !== userId) {
+      throw new HttpException(
+        '当前用户非创建者无权限编辑该项目',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    findProject.baseUrl = editProjectDto.baseUrl;
+    findProject.name = editProjectDto.name;
+    findProject.description = editProjectDto.description;
+    findProject.updateUserId = userId;
+
+    try {
+      await this.projectRepository.save(findProject);
+      return '编辑成功';
+    } catch (error) {
+      throw new HttpException('编辑失败', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   // 获取项目详情
   async getDetail(projectId: number, userId: number) {
     // 查找数据
@@ -119,7 +146,7 @@ export class ProjectService {
 
     // 判断项目未被删除
     if (findProject && findProject.isDeleted === 0) {
-      // 后续加上 加入项目的人
+      // TODO 加上 加入项目的人
       if (findProject.createUserId === userId) {
         return findProject;
       } else {

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { CreateProjectDto } from './dto/create-project.dto';
+import { CreateProjectDto, EditProjectDto } from './dto/create-project.dto';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { FolderDto } from './dto/Folder.dto';
 
@@ -29,6 +29,16 @@ export class ProjectController {
     @Body('projectId') projectId: number,
   ) {
     return await this.projectService.delete(projectId, userId);
+  }
+
+  // 编辑项目
+  @Post('edit')
+  @RequireLogin()
+  async edit(
+    @UserInfo('userId') userId: number,
+    @Body() editProjectDto: EditProjectDto,
+  ) {
+    return await this.projectService.edit(editProjectDto, userId);
   }
 
   // 获取项目详情
