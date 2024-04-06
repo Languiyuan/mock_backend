@@ -39,6 +39,8 @@ export class UserController {
 
   @Post('login')
   async userLogin(@Body() loginUser: LoginUserDto) {
+    // throw new HttpException('登陆失效', HttpStatus.UNAUTHORIZED);
+
     const vo = await this.userService.login(loginUser, false);
 
     vo.accessToken = this.jwtService.sign(
@@ -66,8 +68,8 @@ export class UserController {
     return vo;
   }
 
-  @Get('refresh')
-  async refresh(@Query('refreshToken') refreshToken: string) {
+  @Post('refresh')
+  async refresh(@Body('refreshToken') refreshToken: string) {
     try {
       const data = this.jwtService.verify(refreshToken);
 
@@ -97,8 +99,8 @@ export class UserController {
       );
 
       return {
-        access_token,
-        refresh_token,
+        accessToken: access_token,
+        refreshoken: refresh_token,
       };
     } catch (e) {
       throw new UnauthorizedException('token 已失效，请重新登录');
