@@ -146,9 +146,31 @@ export class ProjectService {
 
     // 判断项目未被删除
     if (findProject && findProject.isDeleted === 0) {
-      // TODO 加上 加入项目的人
       if (findProject.createUserId === userId) {
-        return findProject;
+        // 项目创建人
+        const findUser = await this.userRepository.findOneBy({
+          id: findProject.createUserId,
+        });
+
+        const findMembers = await this.userProjectRepository.find({
+          where: { projectId: findProject.id, isCreateUser: 0, isDeleted: 0 },
+        });
+        //  项目成员
+        let findMembersInfoList = [];
+        if (findMembers.length) {
+          const userIds = findMembers.map((item) => item.userId);
+          findMembersInfoList = await this.userRepository
+            .createQueryBuilder('user')
+            .select(['user.id', 'user.username'])
+            .where('user.id IN (:...userIds)', { userIds })
+            .getMany();
+        }
+
+        return {
+          ...findProject,
+          creatUserName: findUser.username,
+          members: findMembersInfoList,
+        };
       } else {
         throw new HttpException(
           '该项目当前账号无权查看',
