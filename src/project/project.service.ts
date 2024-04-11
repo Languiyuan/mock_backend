@@ -168,7 +168,7 @@ export class ProjectService {
 
         return {
           ...findProject,
-          creatUserName: findUser.username,
+          createUsername: findUser.username,
           members: findMembersInfoList,
         };
       } else {

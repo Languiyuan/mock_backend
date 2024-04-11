@@ -189,7 +189,7 @@ export class ApiService {
   async queryApi(
     userId: number,
     projectId: number,
-    folderId: number,
+    folderId: number | null,
     name: string,
     url: string,
     pageNo: number,
@@ -223,7 +223,7 @@ export class ApiService {
       },
     });
 
-    return { findApis, totalCount };
+    return { list: findApis, total: totalCount, pageNo, pageSize };
   }
 
   // 查询接口详情

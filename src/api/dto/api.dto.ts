@@ -32,7 +32,7 @@ export class ApiDto {
 
   @IsString()
   @IsNotEmpty({ message: 'mockRule不能为空' })
-  @MaxLength(5000, { message: '用户名长度不能超过5000个字符' })
+  @MaxLength(5000, { message: '返回设置不能超过5000个字符' })
   mockRule: string;
 
   @IsNotEmpty({

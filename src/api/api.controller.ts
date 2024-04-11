@@ -9,9 +9,11 @@ export class ApiController {
 
   // 添加接口
   @Post('add')
-  @RequireLogin()
-  async addApi(@UserInfo('userId') userId: number, @Body() apiDto: ApiDto) {
-    return await this.apiService.addApi(userId, apiDto);
+  async addApi(
+    // @UserInfo('userId') userId: number,
+    @Body() apiDto: ApiDto,
+  ) {
+    return await this.apiService.addApi(5, apiDto);
   }
 
   // 删除接口
@@ -38,7 +40,7 @@ export class ApiController {
   async queryApi(
     @UserInfo('userId') userId: number,
     @Body('projectId') projectId: number,
-    @Body('folderId') folderId: number,
+    @Body('folderId') folderId: number | null,
     @Body('name') name: string,
     @Body('url') url: string,
     @Body('pageNo') pageNo: number,

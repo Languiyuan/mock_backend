@@ -16,3 +16,10 @@ export class CreateProjectDto {
   })
   description: string;
 }
+
+export class EditProjectDto extends CreateProjectDto {
+  @IsNotEmpty({
+    message: '项目ID不能为空',
+  })
+  projectId: number;
+}
