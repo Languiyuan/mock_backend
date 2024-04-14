@@ -244,11 +244,11 @@ export class ApiService {
 
     const [findApis, totalCount] = await this.apiRespository.findAndCount({
       where: condition,
+      order: {
+        id: 'DESC', // 按 id 降序排序
+      },
       take: pageSize, // 指定查询数量
       skip: skipCount, // 指定跳过的记录数量
-      order: {
-        id: 'ASC', // 按 id 降序排序
-      },
     });
 
     return { list: findApis, total: totalCount, pageNo, pageSize };
