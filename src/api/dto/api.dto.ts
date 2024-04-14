@@ -43,9 +43,10 @@ export class ApiDto {
   @IsNumber()
   delay: number;
 
-  @IsNotEmpty({
-    message: 'description不能为空',
-  })
+  // @IsNotEmpty({
+  //   message: 'description不能为空',
+  // })
+  @IsString()
   description: string;
 
   @IsIn([0, 1], { message: '数字只能是 0 或 1' })

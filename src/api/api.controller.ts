@@ -9,11 +9,9 @@ export class ApiController {
 
   // 添加接口
   @Post('add')
-  async addApi(
-    // @UserInfo('userId') userId: number,
-    @Body() apiDto: ApiDto,
-  ) {
-    return await this.apiService.addApi(5, apiDto);
+  @RequireLogin()
+  async addApi(@UserInfo('userId') userId: number, @Body() apiDto: ApiDto) {
+    return await this.apiService.addApi(userId, apiDto);
   }
 
   // 删除接口
@@ -25,6 +23,17 @@ export class ApiController {
     @Body('projectId') projectId: number,
   ) {
     return await this.apiService.removeApi(userId, id, projectId);
+  }
+
+  // 批量删除接口
+  @Post('batchRemove')
+  @RequireLogin()
+  async batchRemoveApi(
+    @UserInfo('userId') userId: number,
+    @Body('ids') ids: number[],
+    @Body('projectId') projectId: number,
+  ) {
+    return await this.apiService.batchRemoveApi(userId, ids, projectId);
   }
 
   // 编辑接口

@@ -111,6 +111,34 @@ export class ApiService {
     }
   }
 
+  async batchRemoveApi(userId: number, ids: number[], projectId: number) {
+    // 判断用户是否有权限 是否是项目成员
+    const findMember = await this.userProjectRespository.findOneBy({
+      userId,
+      projectId,
+    });
+
+    if (findMember) {
+      try {
+        await this.apiRespository
+          .createQueryBuilder()
+          .update(Api) // 指定要更新的实体类
+          .set({ isDeleted: 1, updateUserId: userId }) // 设置要更新的属性
+          .whereInIds(ids) // 根据指定的 id 列表进行更新
+          .execute(); // 执行更新操作;
+
+        return '删除成功';
+      } catch (error) {
+        throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+      }
+    } else {
+      throw new HttpException(
+        '项目不存在或无权限操作。',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   // 编辑接口
   async editApi(userId: number, apiDto: ApiDto) {
     // 判断用户是否有权限 是否是项目成员
@@ -202,7 +230,7 @@ export class ApiService {
     const skipCount = (pageNo - 1) * pageSize;
 
     const condition: Record<string, any> = {};
-
+    condition.isDeleted = 0;
     condition.projectId = projectId;
     if (folderId) {
       condition.folderId = folderId;
