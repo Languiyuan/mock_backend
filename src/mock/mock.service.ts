@@ -20,7 +20,7 @@ export class MockService {
       }
 
       const mockRule = findMockRuleList[0].mockRule;
-      const res: any = mock(JSON.parse(mockRule));
+      const res: any = mock(JSON.parse(JSON.parse(mockRule)));
 
       return res;
     } else {
@@ -43,7 +43,8 @@ export class MockService {
       }
 
       const mockRule = findMockRuleList[0].mockRule;
-      const res: any = mock(JSON.parse(mockRule));
+      const data = JSON.parse(JSON.parse(mockRule));
+      const res: any = mock(data);
 
       return res;
     } else {
