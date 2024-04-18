@@ -7,6 +7,7 @@ import { UserProject } from './entities/UserProject.entity';
 import { User } from 'src/user/entities/User.entity';
 import { Folder } from './entities/Folder.entity';
 import { FolderDto } from './dto/Folder.dto';
+import { Api } from 'src/api/entities/Api.entity';
 
 @Injectable()
 export class ProjectService {
@@ -22,6 +23,9 @@ export class ProjectService {
   // 项目目录表
   @InjectRepository(Folder)
   private folderRepository: Repository<Folder>;
+  // API表
+  @InjectRepository(Api)
+  private apiRepository: Repository<Api>;
 
   // 创建项目
   async add(createProjectDto: CreateProjectDto, userId: number) {
@@ -361,7 +365,8 @@ export class ProjectService {
         sameFolder.createUserId = userId;
         sameFolder.updateUserId = userId;
         await this.folderRepository.save(sameFolder);
-        return '创建目录成功';
+
+        return { msg: '创建目录成功', id: sameFolder.id };
       }
     }
 
@@ -372,7 +377,14 @@ export class ProjectService {
     newFolder.updateUserId = userId;
 
     await this.folderRepository.save(newFolder);
-    return '创建目录成功';
+    const findNewFolder = await this.folderRepository.find({
+      where: {
+        name: folderDto.folderName,
+        projectId: folderDto.projectId,
+      },
+    });
+
+    return { msg: '创建目录成功', id: findNewFolder[0].id };
   }
 
   // 删除项目目录
@@ -382,7 +394,22 @@ export class ProjectService {
     findFolder.updateUserId = userId;
 
     await this.folderRepository.save(findFolder);
-    // TODO 删除api中的目录项目key
+
+    const findApiIds = await this.apiRepository.find({
+      select: ['id'],
+      where: { folderId: id },
+    });
+
+    if (findApiIds.length) {
+      const ids = findApiIds.map((item) => item.id);
+      await this.apiRepository
+        .createQueryBuilder()
+        .update(Api) // 指定要更新的实体类
+        .set({ folderId: null, updateUserId: userId }) // 设置要更新的属性
+        .whereInIds(ids) // 根据指定的 id 列表进行更新
+        .execute(); // 执行更新操作;
+    }
+
     return '删除目录成功';
   }
 
@@ -401,6 +428,7 @@ export class ProjectService {
     const findFolderList = await this.folderRepository.find({
       where: {
         projectId,
+        isDeleted: 0,
       },
     });
 

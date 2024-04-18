@@ -6,9 +6,12 @@ import { Project } from './entities/project.entity';
 import { Folder } from './entities/Folder.entity';
 import { UserProject } from './entities/UserProject.entity';
 import { User } from 'src/user/entities/User.entity';
+import { Api } from 'src/api/entities/Api.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Project, Folder, UserProject, User])],
+  imports: [
+    TypeOrmModule.forFeature([Project, Folder, UserProject, User, Api]),
+  ],
   controllers: [ProjectController],
   providers: [ProjectService],
 })
