@@ -3,16 +3,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Api } from 'src/api/entities/Api.entity';
 import { Repository } from 'typeorm';
 import { mock } from 'mockjs';
+import { Project } from 'src/project/entities/project.entity';
 
 @Injectable()
 export class MockService {
   @InjectRepository(Api)
   private apiRepository: Repository<Api>;
 
+  @InjectRepository(Project)
+  private projectRepository: Repository<Project>;
+
   async handlePost(projectSign: string, url: string) {
+    const apiUrl = await this.initMatch(projectSign, url);
+
     const findMockRuleList = await this.apiRepository.find({
       select: ['mockRule', 'method'],
-      where: { projectSign, url },
+      where: { projectSign, url: apiUrl },
     });
     if (findMockRuleList.length) {
       if (!(findMockRuleList[0].method === 'POST')) {
@@ -32,9 +38,11 @@ export class MockService {
   }
 
   async handleGet(projectSign: string, url: string) {
+    const apiUrl = await this.initMatch(projectSign, url);
+
     const findMockRuleList = await this.apiRepository.find({
       select: ['mockRule', 'method'],
-      where: { projectSign, url },
+      where: { projectSign, url: apiUrl },
     });
 
     if (findMockRuleList.length) {
@@ -53,5 +61,23 @@ export class MockService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async initMatch(projectSign: string, url: string) {
+    // 获取baseUrl
+    const findProject = await this.projectRepository.findOneBy({
+      sign: projectSign,
+    });
+
+    if (!findProject) {
+      throw new HttpException('项目不存在,请检查路径', HttpStatus.BAD_REQUEST);
+    }
+    let apiUrl: string = '';
+    if (url.includes(findProject.baseUrl)) {
+      apiUrl = url.replace(findProject.baseUrl, '');
+    } else {
+      throw new HttpException('baseUrl错误,请检查路径', HttpStatus.BAD_REQUEST);
+    }
+    return apiUrl;
   }
 }
