@@ -8,7 +8,7 @@ export class UserProject {
   id: number;
 
   @Column({
-    comment: '创建者id',
+    comment: '成员id',
   })
   userId: number;
 

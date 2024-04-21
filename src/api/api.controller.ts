@@ -76,8 +76,12 @@ export class ApiController {
   // 查询api历史
   @Post('queryHistory')
   @RequireLogin()
-  async queryHistory(@Body('id') id: number) {
-    return await this.apiService.queryHistory(id);
+  async queryHistory(
+    @Body('apiId') apiId: number,
+    @Body('pageNo') pageNo: number,
+    @Body('pageSize') pageSize: number,
+  ) {
+    return await this.apiService.queryHistory(apiId, pageNo, pageSize);
   }
 
   @Post('moveApi')

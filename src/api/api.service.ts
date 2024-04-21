@@ -156,19 +156,19 @@ export class ApiService {
       // 如果mockRule 修改
       if (findApi.mockRule !== apiDto.mockRule) {
         // 查所有历史记录数量
-        const historyQueryBuilder = this.apiHistoryRepository
-          .createQueryBuilder()
-          .where('apiId = :apiId', { apiId: findApi.id });
+        // const historyQueryBuilder = this.apiHistoryRepository
+        //   .createQueryBuilder()
+        //   .where('apiId = :apiId', { apiId: findApi.id });
 
-        const historyCount = await historyQueryBuilder.getCount();
-        // 限制数量5条
-        if (historyCount >= 5) {
-          const findLastHistory = await historyQueryBuilder
-            .orderBy('id', 'ASC')
-            .getOne();
+        // const historyCount = await historyQueryBuilder.getCount();
+        // // 限制数量5条
+        // if (historyCount >= 5) {
+        //   const findLastHistory = await historyQueryBuilder
+        //     .orderBy('id', 'ASC')
+        //     .getOne();
 
-          await this.apiHistoryRepository.delete(findLastHistory.id);
-        }
+        //   await this.apiHistoryRepository.delete(findLastHistory.id);
+        // }
 
         const newApiHistory = new ApiHistory();
         newApiHistory.operateType = '修改';
@@ -260,10 +260,20 @@ export class ApiService {
   }
 
   // 查询历史记录
-  async queryHistory(apiId: number) {
-    return await this.apiHistoryRepository.find({
-      where: { apiId },
-    });
+  async queryHistory(apiId: number, pageNo: number, pageSize: number) {
+    const skipCount = (pageNo - 1) * pageSize;
+
+    const [findApiHistory, totalCount] =
+      await this.apiHistoryRepository.findAndCount({
+        where: { apiId },
+        order: {
+          id: 'DESC', // 按 id 降序排序
+        },
+        take: pageSize, // 指定查询数量
+        skip: skipCount, // 指定跳过的记录数量
+      });
+
+    return { list: findApiHistory, total: totalCount, pageNo, pageSize };
   }
 
   // 移动api到其他目录

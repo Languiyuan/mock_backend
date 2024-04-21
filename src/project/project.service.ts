@@ -143,6 +143,7 @@ export class ProjectService {
 
   // 获取项目详情
   async getDetail(projectId: number, userId: number) {
+    console.log('userId', userId);
     // 查找数据
     const findProject = await this.projectRepository.findOneBy({
       id: projectId,
@@ -150,37 +151,44 @@ export class ProjectService {
 
     // 判断项目未被删除
     if (findProject && findProject.isDeleted === 0) {
-      if (findProject.createUserId === userId) {
-        // 项目创建人
-        const findUser = await this.userRepository.findOneBy({
-          id: findProject.createUserId,
-        });
+      // 项目创建人
+      const findUser = await this.userRepository.findOneBy({
+        id: findProject.createUserId,
+      });
 
-        const findMembers = await this.userProjectRepository.find({
-          where: { projectId: findProject.id, isCreateUser: 0, isDeleted: 0 },
-        });
-        //  项目成员
-        let findMembersInfoList = [];
-        if (findMembers.length) {
-          const userIds = findMembers.map((item) => item.userId);
-          findMembersInfoList = await this.userRepository
-            .createQueryBuilder('user')
-            .select(['user.id', 'user.username'])
-            .where('user.id IN (:...userIds)', { userIds })
-            .getMany();
-        }
-
-        return {
-          ...findProject,
-          createUsername: findUser.username,
-          members: findMembersInfoList,
-        };
-      } else {
-        throw new HttpException(
-          '该项目当前账号无权查看',
-          HttpStatus.BAD_REQUEST,
-        );
+      const findMembers = await this.userProjectRepository.find({
+        where: { projectId: findProject.id, isDeleted: 0 },
+      });
+      //  项目成员
+      let findMembersInfoList = [];
+      if (findMembers.length) {
+        const userIds = findMembers.map((item) => item.userId);
+        findMembersInfoList = await this.userRepository
+          .createQueryBuilder('user')
+          .select(['user.id', 'user.username'])
+          .where('user.id IN (:...userIds)', { userIds })
+          .getMany();
       }
+      const members = findMembersInfoList.map((item) => {
+        return {
+          ...item,
+          isCreateUesr: item.id === findProject.createUserId,
+        };
+      });
+
+      return {
+        ...findProject,
+        createUsername: findUser.username,
+        members: members,
+      };
+      // if (findProject.createUserId === userId) {
+
+      // } else {
+      //   throw new HttpException(
+      //     '该项目当前账号无权查看',
+      //     HttpStatus.BAD_REQUEST,
+      //   );
+      // }
     } else {
       throw new HttpException('项目不存在', HttpStatus.BAD_REQUEST);
     }
@@ -339,7 +347,23 @@ export class ProjectService {
     const findMembers = await this.userProjectRepository.find({
       where: { projectId, isDeleted: 0 },
     });
-    return findMembers;
+    if (findMembers.length) {
+      const userIds = findMembers.map((item) => item.userId);
+      const findUsers = await this.userRepository.find({
+        where: { id: In(userIds) },
+      });
+
+      const members = findMembers.map((item) => {
+        const data = findUsers.find((user) => user.id === item.userId);
+        return {
+          ...item,
+          username: data.username,
+        };
+      });
+
+      return members;
+    }
+    return [];
   }
 
   // 添加项目目录
