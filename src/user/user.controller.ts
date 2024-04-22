@@ -231,6 +231,13 @@ export class UserController {
     return await this.userService.update(userId, updateUserDto);
   }
 
+  // 通过用户名模糊搜索
+  @Post('findUserByUsername')
+  @RequireLogin()
+  async findUserByUsername(@Body('username') username: string) {
+    return await this.userService.findUserByUsername(username);
+  }
+
   @Get('freeze')
   @RequireLogin()
   async freeze(@UserInfo('userId') userId: number) {

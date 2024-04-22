@@ -198,6 +198,16 @@ export class UserService {
     }
   }
 
+  // 模糊搜索用户
+  async findUserByUsername(username: string) {
+    const findUsers = await this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.username', 'user.id'])
+      .where('user.username LIKE :username', { username: `%${username}%` })
+      .getMany();
+    return findUsers.length ? findUsers.slice(0, 20) : [];
+  }
+
   // 冻结账号
   async freeze(userId: number) {
     const foundUser = await this.userRepository.findOneBy({
