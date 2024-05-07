@@ -14,5 +14,6 @@ import { Api } from 'src/api/entities/Api.entity';
   ],
   controllers: [ProjectController],
   providers: [ProjectService],
+  exports: [ProjectService],
 })
 export class ProjectModule {}

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateProjectDto, EditProjectDto } from './dto/create-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
-import { In, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { UserProject } from './entities/UserProject.entity';
 import { User } from 'src/user/entities/User.entity';
 import { Folder } from './entities/Folder.entity';
@@ -192,6 +192,32 @@ export class ProjectService {
     } else {
       throw new HttpException('项目不存在', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  // 管理员 获取所有项目
+  async getAllProject(name: string, pageNo: number, pageSize: number) {
+    if (!pageNo || !pageSize) {
+      throw new HttpException('请校验传参', HttpStatus.BAD_REQUEST);
+    }
+
+    const skipCount = (pageNo - 1) * pageSize;
+
+    const condition: Record<string, any> = {};
+
+    if (name) {
+      condition.name = Like(`%${name}%`);
+    }
+
+    const [findList, totalCount] = await this.projectRepository.findAndCount({
+      where: condition,
+      order: {
+        id: 'DESC', // 按 id 降序排序
+      },
+      take: pageSize, // 指定查询数量
+      skip: skipCount, // 指定跳过的记录数量
+    });
+
+    return { list: findList, total: totalCount, pageNo, pageSize };
   }
 
   // 获取当前用户 所有项目 all || 创建的项目 create || 加入的项目 join

@@ -6,6 +6,8 @@ import {
   Inject,
   UnauthorizedException,
   Query,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/RegisterUserDto';
@@ -16,7 +18,7 @@ import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { RedisService } from '../redis/redis.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ProjectService } from 'src/project/project.service';
 
 @Controller('user')
 export class UserController {
@@ -24,6 +26,9 @@ export class UserController {
 
   @Inject(RedisService)
   private redisService: RedisService;
+
+  @Inject(ProjectService)
+  private projectService: ProjectService;
 
   @Post('register')
   async register(@Body() registerUser: RegisterUserDto) {
@@ -41,14 +46,13 @@ export class UserController {
   async userLogin(@Body() loginUser: LoginUserDto) {
     // throw new HttpException('登陆失效', HttpStatus.UNAUTHORIZED);
 
-    const vo = await this.userService.login(loginUser, false);
+    const vo = await this.userService.login(loginUser);
 
     vo.accessToken = this.jwtService.sign(
       {
         userId: vo.userInfo.id,
         username: vo.userInfo.username,
-        roles: vo.userInfo.roles,
-        permissions: vo.userInfo.permissions,
+        isAdmin: vo.userInfo.isAdmin,
       },
       {
         expiresIn: this.configService.get('jwt_access_token_expires_time'),
@@ -79,8 +83,7 @@ export class UserController {
         {
           userId: user.id,
           username: user.username,
-          roles: user.roles,
-          permissions: user.permissions,
+          isAdmin: user.isAdmin,
         },
         {
           expiresIn:
@@ -109,14 +112,12 @@ export class UserController {
 
   @Post('admin/login')
   async adminLogin(@Body() loginUser: LoginUserDto) {
-    const vo = await this.userService.login(loginUser, true);
+    const vo = await this.userService.login(loginUser);
 
     vo.accessToken = this.jwtService.sign(
       {
         userId: vo.userInfo.id,
         username: vo.userInfo.username,
-        roles: vo.userInfo.roles,
-        permissions: vo.userInfo.permissions,
       },
       {
         expiresIn: this.configService.get('jwt_access_token_expires_time'),
@@ -147,8 +148,6 @@ export class UserController {
         {
           userId: user.id,
           username: user.username,
-          roles: user.roles,
-          permissions: user.permissions,
         },
         {
           expiresIn:
@@ -183,11 +182,7 @@ export class UserController {
 
     const vo = new UserDetailVo();
     vo.id = user.id;
-    vo.email = user.email;
     vo.username = user.username;
-    vo.headPic = user.headPic;
-    vo.phoneNumber = user.phoneNumber;
-    vo.nickName = user.nickName;
     vo.createTime = user.createTime;
     vo.isFrozen = user.isFrozen;
 
@@ -195,7 +190,7 @@ export class UserController {
   }
 
   // 更新密码
-  @Post(['update_password', 'admin/update_password'])
+  @Post('updatePassword')
   @RequireLogin()
   async updatePassword(
     @UserInfo('userId') userId: number,
@@ -205,31 +200,21 @@ export class UserController {
   }
 
   // 获取验证码
-  @Get('update_password/captcha')
-  @RequireLogin()
-  async updatePasswordCaptcha(@Query('address') address: string) {
-    const captcha = Math.random().toString().slice(2, 8);
+  // @Get('update_password/captcha')
+  // @RequireLogin()
+  // async updatePasswordCaptcha(@Query('address') address: string) {
+  //   const captcha = Math.random().toString().slice(2, 8);
 
-    await this.redisService.set(
-      `update_password_captcha_${address}`,
-      captcha,
-      5 * 60,
-    );
+  //   await this.redisService.set(
+  //     `update_password_captcha_${address}`,
+  //     captcha,
+  //     5 * 60,
+  //   );
 
-    // 邮箱发送
+  //   // 邮箱发送
 
-    return '发送成功';
-  }
-
-  // 修改用户信息
-  @Post(['update', 'admin/update'])
-  @RequireLogin()
-  async update(
-    @UserInfo('userId') userId: number,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return await this.userService.update(userId, updateUserDto);
-  }
+  //   return '发送成功';
+  // }
 
   // 通过用户名模糊搜索
   @Post('findUserByUsername')
@@ -238,15 +223,66 @@ export class UserController {
     return await this.userService.findUserByUsername(username);
   }
 
-  @Get('freeze')
+  // 管理员 冻结用户 账号
+  @Post('admin/freeze')
   @RequireLogin()
-  async freeze(@UserInfo('userId') userId: number) {
+  async freeze(
+    @UserInfo('isAdmin') isAdmin: boolean,
+    @Body('userId') userId: number,
+  ) {
+    if (!isAdmin) {
+      throw new HttpException('非管理员，无权限操作', HttpStatus.BAD_REQUEST);
+    }
     return await this.userService.freeze(userId);
+  }
+
+  // 管理员 查询所有用户 也可名字模糊搜索
+  @Post('admin/getAllUsers')
+  @RequireLogin()
+  async getAllUsers(
+    @UserInfo('isAdmin') isAdmin: boolean,
+    @Body('username') username: string,
+    @Body('pageNo') pageNo: number,
+    @Body('pageSize') pageSize: number,
+  ) {
+    if (!isAdmin) {
+      throw new HttpException('非管理员，无权限操作', HttpStatus.BAD_REQUEST);
+    }
+    return await this.userService.getAllUsers(username, pageNo, pageSize);
+  }
+
+  // 管理员 添加项目成员
+  @Post('admin/addProjectMember')
+  @RequireLogin()
+  async addProjectMember(
+    @UserInfo('isAdmin') isAdmin: boolean,
+    @Body('projectId') projectId: number,
+    @Body('memberId') memberId: number,
+  ) {
+    if (!isAdmin) {
+      throw new HttpException('非管理员，无权限操作', HttpStatus.BAD_REQUEST);
+    }
+
+    return await this.projectService.addProjectMember(projectId, memberId);
+  }
+
+  // 管理员 获取所有项目
+  @Post('admin/getAllProject')
+  @RequireLogin()
+  async getAllProject(
+    @UserInfo('isAdmin') isAdmin: boolean,
+    @Body('name') name: string,
+    @Body('pageNo') pageNo: number,
+    @Body('pageSize') pageSize: number,
+  ) {
+    if (!isAdmin) {
+      throw new HttpException('非管理员，无权限操作', HttpStatus.BAD_REQUEST);
+    }
+    return await this.projectService.getAllProject(name, pageNo, pageSize);
   }
 
   @Get('initData')
   async initData() {
-    await this.userService.initData();
-    return 'done';
+    return await this.userService.initData();
   }
 }
