@@ -186,7 +186,28 @@ export class UserService {
 
     try {
       await this.userRepository.save(foundUser);
-      return '操作成功';
+      return '冻结成功';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      throw new HttpException('操作失败, 500', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // 解冻账号
+  async unfreeze(userId: number) {
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    if (foundUser.isAdmin) {
+      throw new HttpException('管理员不能被冻结账户', HttpStatus.BAD_REQUEST);
+    }
+
+    foundUser.isFrozen = false;
+
+    try {
+      await this.userRepository.save(foundUser);
+      return '解冻成功';
     } catch (e) {
       this.logger.error(e, UserService);
       throw new HttpException('操作失败, 500', HttpStatus.BAD_REQUEST);
@@ -194,7 +215,12 @@ export class UserService {
   }
 
   // 获取所有用户
-  async getAllUsers(username: string, pageNo: number, pageSize: number) {
+  async getAllUsers(
+    username: string,
+    isAdminStatus: boolean | undefined,
+    pageNo: number,
+    pageSize: number,
+  ) {
     if (!pageNo || !pageSize) {
       throw new HttpException('请校验传参', HttpStatus.BAD_REQUEST);
     }
@@ -206,12 +232,16 @@ export class UserService {
     if (username) {
       condition.username = Like(`%${username}%`);
     }
+    if (typeof isAdminStatus === 'boolean') {
+      condition.isAdmin = isAdminStatus;
+    }
 
     const [findUsers, totalCount] = await this.userRepository.findAndCount({
       where: condition,
       order: {
-        id: 'DESC', // 按 id 降序排序
+        id: 'ASC', // 按 id 降序排序
       },
+      select: ['id', 'username', 'isFrozen', 'isAdmin'], // 指定要选择的字段
       take: pageSize, // 指定查询数量
       skip: skipCount, // 指定跳过的记录数量
     });

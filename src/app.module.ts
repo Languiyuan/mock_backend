@@ -11,7 +11,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { LoginGuard } from './login.guard';
-import { PermissionGuard } from './permission.guard';
 import { MockModule } from './mock/mock.module';
 import { Project } from './project/entities/project.entity';
 import { Folder } from './project/entities/Folder.entity';
@@ -82,10 +81,6 @@ import { ApiHistory } from './api/entities/ApiHistory.entity';
     {
       provide: APP_GUARD,
       useClass: LoginGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: PermissionGuard,
     },
   ],
 })

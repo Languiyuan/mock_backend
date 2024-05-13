@@ -203,7 +203,7 @@ export class ProjectService {
     const skipCount = (pageNo - 1) * pageSize;
 
     const condition: Record<string, any> = {};
-
+    condition.isDeleted = 0;
     if (name) {
       condition.name = Like(`%${name}%`);
     }
@@ -216,8 +216,23 @@ export class ProjectService {
       take: pageSize, // 指定查询数量
       skip: skipCount, // 指定跳过的记录数量
     });
+    // 获取members
+    const results = findList.map((item) => this.queryMembers(item.id));
+    const membersList = await Promise.all(results);
+    const list = findList.map((item, index) => {
+      const createUsername = membersList[index].find(
+        (member) => member.userId === item.createUserId,
+      )?.username;
+      return {
+        ...item,
+        createUsername,
+        members: membersList[index].map((member) => {
+          return { id: member.id, username: member.username };
+        }),
+      };
+    });
 
-    return { list: findList, total: totalCount, pageNo, pageSize };
+    return { list, total: totalCount, pageNo, pageSize };
   }
 
   // 获取当前用户 所有项目 all || 创建的项目 create || 加入的项目 join
@@ -340,6 +355,7 @@ export class ProjectService {
     projectId: number,
     memberId: number,
     userId: number,
+    isAdmin: boolean,
   ) {
     // 需要判断 当前用户是否是项目创建者，是否有权限
     const findUserProject = await this.userProjectRepository.findOneBy({
@@ -347,10 +363,10 @@ export class ProjectService {
       projectId,
     });
 
-    if (findUserProject.isCreateUser === 0) {
+    if (findUserProject.isCreateUser === 0 && !isAdmin) {
       throw new HttpException(
         '当前用户非项目创建者, 无删除权限',
-        HttpStatus.UNAUTHORIZED,
+        HttpStatus.BAD_REQUEST,
       );
     }
 

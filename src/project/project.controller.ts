@@ -78,11 +78,13 @@ export class ProjectController {
     @Body('projectId') projectId: number,
     @Body('memberId') memberId: number,
     @UserInfo('userId') userId: number,
+    @UserInfo('isAdmin') isAdmin: boolean,
   ) {
     return await this.projectService.removeProjectMember(
       projectId,
       memberId,
       userId,
+      isAdmin,
     );
   }
 

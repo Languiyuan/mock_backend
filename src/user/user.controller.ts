@@ -31,7 +31,14 @@ export class UserController {
   private projectService: ProjectService;
 
   @Post('register')
-  async register(@Body() registerUser: RegisterUserDto) {
+  @RequireLogin()
+  async register(
+    @UserInfo('isAdmin') isAdmin: boolean,
+    @Body() registerUser: RegisterUserDto,
+  ) {
+    if (!isAdmin) {
+      throw new HttpException('非管理员，无权限操作', HttpStatus.BAD_REQUEST);
+    }
     console.log(registerUser);
     return await this.userService.register(registerUser);
   }
@@ -236,6 +243,19 @@ export class UserController {
     return await this.userService.freeze(userId);
   }
 
+  // 管理员 解冻用户 账号
+  @Post('admin/unfreeze')
+  @RequireLogin()
+  async unfreeze(
+    @UserInfo('isAdmin') isAdmin: boolean,
+    @Body('userId') userId: number,
+  ) {
+    if (!isAdmin) {
+      throw new HttpException('非管理员，无权限操作', HttpStatus.BAD_REQUEST);
+    }
+    return await this.userService.unfreeze(userId);
+  }
+
   // 管理员 查询所有用户 也可名字模糊搜索
   @Post('admin/getAllUsers')
   @RequireLogin()
@@ -244,11 +264,17 @@ export class UserController {
     @Body('username') username: string,
     @Body('pageNo') pageNo: number,
     @Body('pageSize') pageSize: number,
+    @Body('isAdmin') isAdminStatus: boolean | undefined,
   ) {
     if (!isAdmin) {
       throw new HttpException('非管理员，无权限操作', HttpStatus.BAD_REQUEST);
     }
-    return await this.userService.getAllUsers(username, pageNo, pageSize);
+    return await this.userService.getAllUsers(
+      username,
+      isAdminStatus,
+      pageNo,
+      pageSize,
+    );
   }
 
   // 管理员 添加项目成员
