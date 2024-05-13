@@ -1,7 +1,9 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Res } from '@nestjs/common';
 import { ApiService } from './api.service';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { ApiDto } from './dto/api.dto';
+import { Response } from 'express';
+import * as fs from 'fs-extra';
 
 @Controller('api')
 export class ApiController {
@@ -84,6 +86,7 @@ export class ApiController {
     return await this.apiService.queryHistory(apiId, pageNo, pageSize);
   }
 
+  // 移动Api
   @Post('moveApi')
   @RequireLogin()
   async moveApi(
@@ -92,5 +95,23 @@ export class ApiController {
     @Body('folderId') folderId: number,
   ) {
     return await this.apiService.moveApi(userId, id, folderId);
+  }
+
+  // 导出项目所有api  json文件
+  @Post('exportProjectAllApi')
+  @RequireLogin()
+  async exportProject(
+    @Res() res: Response,
+    @Body('projectId') projectId: number,
+  ) {
+    const list = await this.apiService.exportProjectAllApi(projectId);
+    const filename = `lan_Mock_project_${new Date().getTime()}.json`;
+    // 生成 json 文件内容，
+    await fs.writeJson(filename, list);
+    const content = fs.readFileSync(filename);
+    res.setHeader('Content-Type', 'application/json');
+    res.set('Content-Disposition', `attachment; filename="${filename}"`);
+    res.end(content);
+    await fs.unlink(filename);
   }
 }

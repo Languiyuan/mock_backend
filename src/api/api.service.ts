@@ -6,7 +6,6 @@ import { Like, Repository } from 'typeorm';
 import { UserProject } from 'src/project/entities/UserProject.entity';
 import { ApiHistory } from './entities/ApiHistory.entity';
 import { Project } from 'src/project/entities/project.entity';
-
 @Injectable()
 export class ApiService {
   // apiRespository
@@ -287,5 +286,22 @@ export class ApiService {
     } else {
       throw new HttpException('api不存在', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  // 导出项目json文件
+  async exportProjectAllApi(projectId: number) {
+    const findApiList = await this.apiRespository.find({
+      where: { projectId },
+    });
+    const list = findApiList.map((item) => {
+      return {
+        ...item,
+        createUserId: null,
+        updateUserId: null,
+        folderId: null,
+      };
+    });
+
+    return list;
   }
 }
