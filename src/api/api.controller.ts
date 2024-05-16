@@ -1,9 +1,17 @@
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { ApiService } from './api.service';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { ApiDto } from './dto/api.dto';
 import { Response } from 'express';
 import * as fs from 'fs-extra';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('api')
 export class ApiController {
@@ -113,5 +121,35 @@ export class ApiController {
     res.set('Content-Disposition', `attachment; filename="${filename}"`);
     res.end(content);
     await fs.unlink(filename);
+  }
+
+  // 导入项目文件 api 并创建相应api
+  @Post('uploadProjectFile')
+  @UseInterceptors(FileInterceptor('projectFile', { dest: 'uploads' }))
+  async uploadProjectFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body,
+  ) {
+    console.log('file', file);
+    console.log('body', body);
+    // 读取文件内容
+    fs.readFile(file.path, 'utf8')
+      .then((data) => {
+        // 文件内容现在存储在 data 变量中
+        console.log('文件内容:', data);
+
+        // 如果内容是 JSON 格式，你可以解析它
+        try {
+          const jsonData = JSON.parse(data);
+          console.log('JSON 数据:', jsonData);
+          // 删除文件
+          fs.unlink(file.path);
+        } catch (error) {
+          console.error('解析 JSON 时发生错误:', error);
+        }
+      })
+      .catch((err) => {
+        console.error('读取文件时发生错误:', err);
+      });
   }
 }
