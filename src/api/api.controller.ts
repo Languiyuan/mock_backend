@@ -125,25 +125,32 @@ export class ApiController {
 
   // 导入项目文件 api 并创建相应api
   @Post('uploadProjectFile')
-  @UseInterceptors(FileInterceptor('projectFile', { dest: 'uploads' }))
+  @RequireLogin()
+  @UseInterceptors(
+    FileInterceptor('projectFile', {
+      dest: 'uploads',
+      limits: { fileSize: 10 * 1024 * 1024 }, // 大小限制10M
+    }),
+  )
   async uploadProjectFile(
     @UploadedFile() file: Express.Multer.File,
-    @Body() body,
+    @UserInfo('userId') userId: number,
+    @Body('projectId') projectId: number,
   ) {
-    console.log('file', file);
-    console.log('body', body);
     // 读取文件内容
-    fs.readFile(file.path, 'utf8')
-      .then((data) => {
-        // 文件内容现在存储在 data 变量中
-        console.log('文件内容:', data);
-
+    const resultVo = await fs
+      .readFile(file.path, 'utf8')
+      .then(async (data) => {
         // 如果内容是 JSON 格式，你可以解析它
         try {
           const jsonData = JSON.parse(data);
-          console.log('JSON 数据:', jsonData);
-          // 删除文件
-          fs.unlink(file.path);
+          const res = await this.apiService.uploadProjectFile(
+            userId,
+            projectId,
+            jsonData,
+          );
+
+          return res;
         } catch (error) {
           console.error('解析 JSON 时发生错误:', error);
         }
@@ -151,5 +158,8 @@ export class ApiController {
       .catch((err) => {
         console.error('读取文件时发生错误:', err);
       });
+    // 删除文件
+    fs.unlink(file.path);
+    return resultVo;
   }
 }

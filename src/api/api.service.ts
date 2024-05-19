@@ -6,6 +6,7 @@ import { Like, Repository } from 'typeorm';
 import { UserProject } from 'src/project/entities/UserProject.entity';
 import { ApiHistory } from './entities/ApiHistory.entity';
 import { Project } from 'src/project/entities/project.entity';
+import { validate } from 'class-validator';
 @Injectable()
 export class ApiService {
   // apiRespository
@@ -26,6 +27,7 @@ export class ApiService {
     // 判断是否已经存在一样的url
     const findApiByUrl = await this.apiRespository.findOneBy({
       url: apiDto.url,
+      projectId: apiDto.projectId,
     });
 
     if (findApiByUrl) {
@@ -303,5 +305,38 @@ export class ApiService {
     });
 
     return list;
+  }
+
+  // 导入接口
+  async uploadProjectFile(
+    userId: number,
+    projectId: number,
+    fileData: ApiDto[],
+  ) {
+    const resultVo = [];
+    for (const dto of fileData) {
+      const apiDto: ApiDto = Object.assign(new ApiDto(), dto); // 使用Object.assign进行对象属性拷贝
+      apiDto.projectId = projectId;
+      try {
+        const errors = await validate(apiDto);
+        if (errors.length > 0) {
+          const allValueList = errors.map((error) => {
+            const valueList = Object.values(error.constraints);
+            return valueList.join(',');
+          });
+          throw new Error(allValueList.join(','));
+        } else {
+          await this.addApi(userId, apiDto);
+          resultVo.push({ url: apiDto.url, status: 'success', error: null });
+        }
+      } catch (error) {
+        resultVo.push({
+          url: apiDto.url,
+          status: 'failed',
+          error: error.message,
+        });
+      }
+    }
+    return resultVo;
   }
 }
