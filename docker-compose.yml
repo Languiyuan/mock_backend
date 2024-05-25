@@ -4,8 +4,6 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile
-      args:
-        - CACHEBUST=$(date +%s)
     depends_on:
       - mock-mysql-container
       - mock-redis-container
