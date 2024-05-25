@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Api } from 'src/api/entities/Api.entity';
 import { Repository } from 'typeorm';
 import { mock } from 'mockjs';
-import { Project } from 'src/project/entities/project.entity';
+import { Project } from 'src/project/entities/Project.entity';
 
 @Injectable()
 export class MockService {

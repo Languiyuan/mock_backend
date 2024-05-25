@@ -123,6 +123,14 @@ export class ApiController {
     await fs.unlink(filename);
   }
 
+  // @Post('exportProjectAllApiFormMockjs')
+  // @RequireLogin()]
+  // async exportProjectFormMockjs(
+  //   @Body('projectId') projectId: number,
+  // ) {
+  //   const fileString = await this.apiService.exportProjectFormMockjs(projectId)
+  // }
+
   // 导入项目文件 api 并创建相应api
   @Post('uploadProjectFile')
   @RequireLogin()

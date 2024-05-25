@@ -4,27 +4,26 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { User } from './user/entities/User.entity';
-import { Role } from './user/entities/role.entity';
-import { Permission } from './user/entities/permissions.entity';
 import { RedisModule } from './redis/redis.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { LoginGuard } from './login.guard';
 import { MockModule } from './mock/mock.module';
-import { Project } from './project/entities/project.entity';
+import { Project } from './project/entities/Project.entity';
 import { Folder } from './project/entities/Folder.entity';
 import { ProjectModule } from './project/project.module';
 import { ApiModule } from './api/api.module';
 import { Api } from './api/entities/Api.entity';
 import { UserProject } from './project/entities/UserProject.entity';
 import { ApiHistory } from './api/entities/ApiHistory.entity';
-
+import * as path from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'src/.env',
+      // envFilePath: 'src/.env',
+      envFilePath: path.join(__dirname, '.env'),
     }),
     TypeOrmModule.forRootAsync({
       useFactory(configService: ConfigService) {
@@ -37,16 +36,7 @@ import { ApiHistory } from './api/entities/ApiHistory.entity';
           database: configService.get('mysql_server_database'),
           synchronize: true,
           logging: true,
-          entities: [
-            User,
-            Role,
-            Permission,
-            Project,
-            Folder,
-            Api,
-            UserProject,
-            ApiHistory,
-          ],
+          entities: [User, Project, Folder, Api, UserProject, ApiHistory],
           poolSize: 10,
           connectorPackage: 'mysql2',
           timezone: 'Asia/Beijing', // 设置为你所需的时区 没有起作用

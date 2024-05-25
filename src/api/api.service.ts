@@ -5,7 +5,7 @@ import { Api } from './entities/Api.entity';
 import { Like, Repository } from 'typeorm';
 import { UserProject } from 'src/project/entities/UserProject.entity';
 import { ApiHistory } from './entities/ApiHistory.entity';
-import { Project } from 'src/project/entities/project.entity';
+import { Project } from 'src/project/entities/Project.entity';
 import { validate } from 'class-validator';
 @Injectable()
 export class ApiService {

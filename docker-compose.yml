@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  nest-app:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        - CACHEBUST=$(date +%s)
+    depends_on:
+      - mock-mysql-container
+      - mock-redis-container
+    ports:
+      - 3004:3004
+    networks:
+      - common-network
+  mock-mysql-container:
+    image: mysql
+    volumes:
+      - E:\\FrontEnd\\项目\\nestjs\\mysql-test:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: mock_system
+      MYSQL_ROOT_PASSWORD: 123456
+    networks:
+      - common-network
+  mock-redis-container:
+    image: redis
+    volumes:
+      - E:\\FrontEnd\\项目\\nestjs\\redis-test:/data
+    networks:
+      - common-network
+networks:
+  common-network:
+    driver: bridge

@@ -9,8 +9,6 @@ import { RedisService } from 'src/redis/redis.service';
 import { HttpException } from '@nestjs/common/exceptions';
 import { HttpStatus } from '@nestjs/common/enums';
 import { md5 } from 'src/utils';
-import { Role } from './entities/role.entity';
-import { Permission } from './entities/permissions.entity';
 import { LoginUserDto } from './dto/LoginUserDto';
 import { LoginUserVo } from './vo/login-user.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
@@ -22,12 +20,6 @@ export class UserService {
   // 引入 user实例 操作数据库
   @InjectRepository(User)
   private userRepository: Repository<User>;
-  // 引入 role实例 操作数据库
-  @InjectRepository(Role)
-  private roleRepository: Repository<Role>;
-  // 引入 user实例 操作数据库
-  @InjectRepository(Permission)
-  private permissionRepository: Repository<Permission>;
   // 引入 redis
   @Inject(RedisService)
   private redisService: RedisService;
