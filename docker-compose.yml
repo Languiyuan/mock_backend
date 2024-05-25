@@ -16,7 +16,7 @@ services:
   mock-mysql-container:
     image: mysql
     volumes:
-      - E:\\FrontEnd\\项目\\nestjs\\mysql-test:/var/lib/mysql
+      - /User/Languiyuan/mysql-data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: mock_system
       MYSQL_ROOT_PASSWORD: 123456
@@ -25,7 +25,7 @@ services:
   mock-redis-container:
     image: redis
     volumes:
-      - E:\\FrontEnd\\项目\\nestjs\\redis-test:/data
+      -  /User/Languiyuan/redis-data:/data
     networks:
       - common-network
 networks:
