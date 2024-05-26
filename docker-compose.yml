@@ -2,8 +2,8 @@ version: '3.8'
 services:
   mock-front-app:
     build:
-      context: ../mock-front-end
-      dockerfile: ../mock-front-end/Dockerfile
+      context: ../mock-front-dist
+      dockerfile: ../mock-front-dist/Dockerfile
     depends_on: 
         - nest-app
     ports:
