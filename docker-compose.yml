@@ -1,5 +1,15 @@
 version: '3.8'
 services:
+  mock-front-app:
+    build:
+      context: ../mock-front-end
+      dockerfile: ../mock-front-end/Dockerfile
+    depends_on: 
+        - nest-app
+    ports:
+      - 80:80
+    networks:
+      - common-network
   nest-app:
     build:
       context: ./
