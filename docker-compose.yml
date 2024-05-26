@@ -24,7 +24,7 @@ services:
   mock-mysql-container:
     image: mysql
     ports: 
-      -3306:3306
+      - 3306:3306
     volumes:
       - /User/Languiyuan/mysql-data:/var/lib/mysql
     environment:
@@ -35,7 +35,7 @@ services:
   mock-redis-container:
     image: redis
     ports: 
-      -6379:6379
+      - 6379:6379
     volumes:
       -  /User/Languiyuan/redis-data:/data
     networks:
