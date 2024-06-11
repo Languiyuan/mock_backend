@@ -28,11 +28,11 @@ export class MockController {
     res.type('application/json');
 
     const routePathList = request.path.split('/').slice(1);
-    if (routePathList.length <= 2) {
+    if (routePathList.length <= 4) {
       throw new HttpException('接口路径错误', HttpStatus.BAD_REQUEST);
     }
-    const projectSign: string = routePathList[1];
-    const url: string = `/${routePathList.slice(2).join('/')}`;
+    const projectSign: string = routePathList[2];
+    const url: string = `/${routePathList.slice(3).join('/')}`;
     const data = await this.mockService.handlePost(projectSign, url);
     res.send(data);
   }
@@ -47,11 +47,11 @@ export class MockController {
     res.type('application/json');
 
     const routePathList = request.path.split('/').slice(1);
-    if (routePathList.length <= 2) {
+    if (routePathList.length <= 4) {
       throw new HttpException('接口路径错误', HttpStatus.BAD_REQUEST);
     }
-    const projectSign: string = routePathList[1];
-    const url: string = `/${routePathList.slice(2).join('/')}`;
+    const projectSign: string = routePathList[2];
+    const url: string = `/${routePathList.slice(3).join('/')}`;
     const data = await this.mockService.handleGet(projectSign, url);
     res.send(data);
   }
