@@ -13,6 +13,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
+  // set context
   app.setGlobalPrefix('/lanMock');
   app.useStaticAssets(join(__dirname, '..', 'public'), {
     prefix: '/static/',
