@@ -24,7 +24,8 @@ services:
     ports: 
       - 3306:3306
     volumes:
-      - E:\\FrontEnd\\项目\\nestjs\\docker\\mysql\\data:/var/lib/mysql
+      # - E:\\FrontEnd\\项目\\nestjs\\docker\\mysql\\data:/var/lib/mysql
+      - /User/Languiyuan/mysql-data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: mock_system
       MYSQL_ROOT_PASSWORD: 123456
@@ -35,7 +36,8 @@ services:
     ports: 
       - 6379:6379
     volumes:
-      - E:\\FrontEnd\\项目\\nestjs\\docker\\redis\\data:/data
+      - /User/Languiyuan/redis-data:/data
+      # - E:\\FrontEnd\\项目\\nestjs\\docker\\redis\\data:/data
       # - E:\\FrontEnd\\项目\\nestjs\\docker\\redis\\conf\\redis.conf:/usr/local/etc/redis/redis.conf
     # command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     networks:
