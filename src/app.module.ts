@@ -23,7 +23,7 @@ import * as path from 'path';
     ConfigModule.forRoot({
       isGlobal: true,
       // envFilePath: 'src/.env.development',
-      envFilePath: path.join(__dirname, '.env.production'),
+      envFilePath: path.join(__dirname, '.env'),
     }),
     TypeOrmModule.forRootAsync({
       useFactory(configService: ConfigService) {
