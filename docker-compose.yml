@@ -1,16 +1,14 @@
 version: '3.8'
 services:
   mock-front-app:
-    build:
-      context: ../mock-front-dist
-      dockerfile: ../mock-front-dist/Dockerfile
+    image: mock-front:production
     depends_on: 
-        - nest-app
+        - mock-back-app
     ports:
       - 80:80
     networks:
       - common-network
-  nest-app:
+  mock-back-app:
     build:
       context: ./
       dockerfile: ./Dockerfile
@@ -26,7 +24,7 @@ services:
     ports: 
       - 3306:3306
     volumes:
-      - /User/Languiyuan/mysql-data:/var/lib/mysql
+      - E:\\FrontEnd\\项目\\nestjs\\docker\\mysql\\data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: mock_system
       MYSQL_ROOT_PASSWORD: 123456
@@ -37,7 +35,9 @@ services:
     ports: 
       - 6379:6379
     volumes:
-      -  /User/Languiyuan/redis-data:/data
+      - E:\\FrontEnd\\项目\\nestjs\\docker\\redis\\data:/data
+      # - E:\\FrontEnd\\项目\\nestjs\\docker\\redis\\conf\\redis.conf:/usr/local/etc/redis/redis.conf
+    # command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     networks:
       - common-network
 networks:
