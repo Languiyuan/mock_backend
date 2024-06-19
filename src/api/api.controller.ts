@@ -12,8 +12,10 @@ import { ApiDto } from './dto/api.dto';
 import { Response } from 'express';
 import * as fs from 'fs-extra';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ProjectPermissionInterceptor } from 'src/project-permission.interceptor';
 
 @Controller('api')
+@UseInterceptors(ProjectPermissionInterceptor)
 export class ApiController {
   constructor(private readonly apiService: ApiService) {}
 

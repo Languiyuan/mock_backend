@@ -17,13 +17,13 @@ import { ApiModule } from './api/api.module';
 import { Api } from './api/entities/Api.entity';
 import { UserProject } from './project/entities/UserProject.entity';
 import { ApiHistory } from './api/entities/ApiHistory.entity';
-import * as path from 'path';
+// import * as path from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      // envFilePath: 'src/.env.development',
-      envFilePath: path.join(__dirname, '.env'),
+      envFilePath: 'src/.env.development',
+      // envFilePath: path.join(__dirname, '.env'),
     }),
     TypeOrmModule.forRootAsync({
       useFactory(configService: ConfigService) {

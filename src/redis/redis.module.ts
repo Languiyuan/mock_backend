@@ -15,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
             host: configService.get('redis_server_host'),
             port: configService.get('redis_server_port'),
           },
+          // password: configService.get('redis_server_password'), // 添加密码配置
           database: 1, // 默认0 命名空间
         });
         await client.connect();
