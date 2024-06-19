@@ -9,12 +9,12 @@ import { Project } from 'src/project/entities/Project.entity';
 import { validate } from 'class-validator';
 @Injectable()
 export class ApiService {
-  // apiRespository
+  // apiRepository
   @InjectRepository(Api)
-  private apiRespository: Repository<Api>;
+  private apiRepository: Repository<Api>;
   // 项目成员表
   @InjectRepository(UserProject)
-  private userProjectRespository: Repository<UserProject>;
+  private userProjectRepository: Repository<UserProject>;
   // api history respository
   @InjectRepository(ApiHistory)
   private apiHistoryRepository: Repository<ApiHistory>;
@@ -25,7 +25,7 @@ export class ApiService {
   // 添加接口
   async addApi(userId: number, apiDto: ApiDto) {
     // 判断是否已经存在一样的url
-    const findApiByUrl = await this.apiRespository.findOneBy({
+    const findApiByUrl = await this.apiRepository.findOneBy({
       url: apiDto.url,
       projectId: apiDto.projectId,
     });
@@ -58,10 +58,10 @@ export class ApiService {
     newApi.createUserId = userId;
     newApi.updateUserId = userId;
 
-    await this.apiRespository.save(newApi);
+    await this.apiRepository.save(newApi);
 
     // 添加到历史记录中
-    const findApi = await this.apiRespository.findOneBy({
+    const findApi = await this.apiRepository.findOneBy({
       projectId: apiDto.projectId,
       url: apiDto.url,
     });
@@ -89,17 +89,17 @@ export class ApiService {
   // 删除接口
   async removeApi(userId: number, id: number, projectId: number) {
     // 判断用户是否有权限 是否是项目成员
-    const findMember = await this.userProjectRespository.findOneBy({
+    const findMember = await this.userProjectRepository.findOneBy({
       userId,
       projectId,
     });
 
     if (findMember) {
-      const findApi = await this.apiRespository.findOneBy({ id, projectId });
+      const findApi = await this.apiRepository.findOneBy({ id, projectId });
       if (findApi) {
         findApi.isDeleted = 1;
         findApi.updateUserId = userId;
-        await this.apiRespository.save(findApi);
+        await this.apiRepository.save(findApi);
         return '删除成功';
       } else {
         throw new HttpException('api不存在', HttpStatus.BAD_REQUEST);
@@ -114,14 +114,14 @@ export class ApiService {
 
   async batchRemoveApi(userId: number, ids: number[], projectId: number) {
     // 判断用户是否有权限 是否是项目成员
-    const findMember = await this.userProjectRespository.findOneBy({
+    const findMember = await this.userProjectRepository.findOneBy({
       userId,
       projectId,
     });
 
     if (findMember) {
       try {
-        await this.apiRespository
+        await this.apiRepository
           .createQueryBuilder()
           .update(Api) // 指定要更新的实体类
           .set({ isDeleted: 1, updateUserId: userId }) // 设置要更新的属性
@@ -143,13 +143,13 @@ export class ApiService {
   // 编辑接口
   async editApi(userId: number, apiDto: ApiDto) {
     // 判断用户是否有权限 是否是项目成员
-    const findMember = await this.userProjectRespository.findOneBy({
+    const findMember = await this.userProjectRepository.findOneBy({
       userId,
       projectId: apiDto.projectId,
     });
 
     if (findMember) {
-      const findApi = await this.apiRespository.findOneBy({
+      const findApi = await this.apiRepository.findOneBy({
         id: apiDto.id,
         projectId: apiDto.projectId,
       });
@@ -200,7 +200,7 @@ export class ApiService {
         findApi.on = apiDto.on;
         findApi.updateUserId = userId;
 
-        await this.apiRespository.save(findApi);
+        await this.apiRepository.save(findApi);
 
         return '编辑成功';
       } else {
@@ -243,7 +243,7 @@ export class ApiService {
       condition.url = Like(`%${url}%`);
     }
 
-    const [findApis, totalCount] = await this.apiRespository.findAndCount({
+    const [findApis, totalCount] = await this.apiRepository.findAndCount({
       where: condition,
       order: {
         id: 'DESC', // 按 id 降序排序
@@ -257,7 +257,7 @@ export class ApiService {
 
   // 查询接口详情
   async queryApiDetail(id: number) {
-    return await this.apiRespository.findOneBy({ id });
+    return await this.apiRepository.findOneBy({ id });
   }
 
   // 查询历史记录
@@ -279,11 +279,11 @@ export class ApiService {
 
   // 移动api到其他目录
   async moveApi(userId: number, id: number, folderId: number) {
-    const findApi = await this.apiRespository.findOneBy({ id });
+    const findApi = await this.apiRepository.findOneBy({ id });
     if (findApi) {
       findApi.folderId = folderId;
       findApi.updateUserId = userId;
-      await this.apiRespository.save(findApi);
+      await this.apiRepository.save(findApi);
       return '移动成功';
     } else {
       throw new HttpException('api不存在', HttpStatus.BAD_REQUEST);
@@ -292,7 +292,7 @@ export class ApiService {
 
   // 导出项目json文件
   async exportProjectAllApi(projectId: number) {
-    const findApiList = await this.apiRespository.find({
+    const findApiList = await this.apiRepository.find({
       where: { projectId },
     });
     const list = findApiList.map((item) => {

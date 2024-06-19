@@ -30,13 +30,13 @@ export class ProjectPermissionInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
   // 项目成员表
   @InjectRepository(UserProject)
-  private userProjectRespository: Repository<UserProject>;
+  private userProjectRepository: Repository<UserProject>;
 
   private async checkProjectPermission(
     userId: number,
     projectId: number,
   ): Promise<boolean> {
-    const findMember = await this.userProjectRespository.findOne({
+    const findMember = await this.userProjectRepository.findOne({
       where: { userId, projectId },
     });
     return !!findMember; // 返回是否找到项目成员
