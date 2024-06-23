@@ -1,9 +1,10 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Api } from 'src/api/entities/Api.entity';
 import { Repository } from 'typeorm';
 import { mock } from 'mockjs';
 import { Project } from 'src/project/entities/Project.entity';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class MockService {
@@ -12,6 +13,9 @@ export class MockService {
 
   @InjectRepository(Project)
   private projectRepository: Repository<Project>;
+
+  @Inject(RedisService)
+  private redisService: RedisService;
 
   async handlePost(projectSign: string, url: string) {
     const apiUrl = await this.initMatch(projectSign, url);
@@ -38,6 +42,15 @@ export class MockService {
   }
 
   async handleGet(projectSign: string, url: string) {
+    // 读 redis 获取到了就不走mysql了
+    const redisKey = `/${projectSign}${url}`;
+    const redisRes = await this.redisService.get(redisKey);
+    if (redisRes) {
+      const data = JSON.parse(JSON.parse(redisRes));
+      const res: any = mock(data);
+      return res;
+    }
+
     const apiUrl = await this.initMatch(projectSign, url);
 
     const findMockRuleList = await this.apiRepository.find({
@@ -53,6 +66,9 @@ export class MockService {
       const mockRule = findMockRuleList[0].mockRule;
       const data = JSON.parse(JSON.parse(mockRule));
       const res: any = mock(data);
+
+      // 存 redis
+      await this.redisService.set(redisKey, mockRule, 60 * 60 * 12);
 
       return res;
     } else {

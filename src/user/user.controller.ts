@@ -39,7 +39,7 @@ export class UserController {
     if (!isAdmin) {
       throw new HttpException('非管理员，无权限操作', HttpStatus.BAD_REQUEST);
     }
-    console.log(registerUser);
+
     return await this.userService.register(registerUser);
   }
 

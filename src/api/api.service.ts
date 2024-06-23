@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
 import { ApiDto } from './dto/api.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Api } from './entities/Api.entity';
@@ -7,6 +7,7 @@ import { UserProject } from 'src/project/entities/UserProject.entity';
 import { ApiHistory } from './entities/ApiHistory.entity';
 import { Project } from 'src/project/entities/Project.entity';
 import { validate } from 'class-validator';
+import { RedisService } from '../redis/redis.service';
 @Injectable()
 export class ApiService {
   // apiRepository
@@ -21,6 +22,9 @@ export class ApiService {
   // 项目表
   @InjectRepository(Project)
   private projectRepository: Repository<Project>;
+  // redis
+  @Inject(RedisService)
+  private redisService: RedisService;
 
   // 添加接口
   async addApi(userId: number, apiDto: ApiDto) {
@@ -100,6 +104,16 @@ export class ApiService {
         findApi.isDeleted = 1;
         findApi.updateUserId = userId;
         await this.apiRepository.save(findApi);
+
+        const findProject = await this.projectRepository.findOneBy({
+          id: projectId,
+        });
+        if (findProject) {
+          const redisKey = `/${findApi.projectSign}${findProject.baseUrl}${findApi.url}`;
+          // 从redis中删除 不存在也不会报错
+          await this.redisService.delete(redisKey);
+        }
+
         return '删除成功';
       } else {
         throw new HttpException('api不存在', HttpStatus.BAD_REQUEST);
@@ -121,6 +135,23 @@ export class ApiService {
 
     if (findMember) {
       try {
+        // 清除 reids 里的
+        const findProject = await this.projectRepository.findOneBy({
+          id: projectId,
+        });
+        const updatedApis = await this.apiRepository
+          .createQueryBuilder()
+          .where('id IN (:...ids)', { ids: ids }) // 根据指定的 id 列表进行筛选
+          .getMany(); // 获取满足条件的所有记录
+
+        if (updatedApis.length) {
+          for (const api of updatedApis) {
+            const redisKey = `/${api.projectSign}${findProject?.baseUrl}${api.url}`;
+            // 从redis中删除 不存在也不会报错
+            await this.redisService.delete(redisKey);
+          }
+        }
+
         await this.apiRepository
           .createQueryBuilder()
           .update(Api) // 指定要更新的实体类
@@ -153,6 +184,9 @@ export class ApiService {
         id: apiDto.id,
         projectId: apiDto.projectId,
       });
+
+      // 从redis中删除 不存在也不会报错 需要在存之前删一次，防止万一编辑的是url。删总是没错的
+      this.redisService.delete(`/${findApi.projectSign}${findApi.url}`);
 
       // 如果mockRule 修改
       if (findApi.mockRule !== apiDto.mockRule) {
