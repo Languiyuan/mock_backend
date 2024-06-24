@@ -185,8 +185,15 @@ export class ApiService {
         projectId: apiDto.projectId,
       });
 
+      // 清除 reids 里的
+      const findProject = await this.projectRepository.findOneBy({
+        id: apiDto.projectId,
+      });
+
       // 从redis中删除 不存在也不会报错 需要在存之前删一次，防止万一编辑的是url。删总是没错的
-      this.redisService.delete(`/${findApi.projectSign}${findApi.url}`);
+      this.redisService.delete(
+        `/${findApi.projectSign}${findProject.baseUrl}${findApi.url}`,
+      );
 
       // 如果mockRule 修改
       if (findApi.mockRule !== apiDto.mockRule) {

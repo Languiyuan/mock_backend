@@ -22,7 +22,7 @@ export class MockService {
 
     const findMockRuleList = await this.apiRepository.find({
       select: ['mockRule', 'method'],
-      where: { projectSign, url: apiUrl },
+      where: { projectSign, url: apiUrl, isDeleted: 0 },
     });
     if (findMockRuleList.length) {
       if (!(findMockRuleList[0].method === 'POST')) {
@@ -55,7 +55,7 @@ export class MockService {
 
     const findMockRuleList = await this.apiRepository.find({
       select: ['mockRule', 'method'],
-      where: { projectSign, url: apiUrl },
+      where: { projectSign, url: apiUrl, isDeleted: 0 },
     });
 
     if (findMockRuleList.length) {
