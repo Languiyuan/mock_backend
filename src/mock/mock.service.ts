@@ -22,7 +22,7 @@ export class MockService {
 
     const findMockRuleList = await this.apiRepository.find({
       select: ['mockRule', 'method'],
-      where: { projectSign, url: apiUrl, isDeleted: 0 },
+      where: { projectSign, url: apiUrl, isDeleted: 0, on: 1 },
     });
     if (findMockRuleList.length) {
       if (!(findMockRuleList[0].method === 'POST')) {
@@ -35,7 +35,7 @@ export class MockService {
       return res;
     } else {
       throw new HttpException(
-        '接口路径错误,检查路径和请求方法',
+        '接口路径错误:检查路径和请求方法并确认接口是否开启',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -55,7 +55,7 @@ export class MockService {
 
     const findMockRuleList = await this.apiRepository.find({
       select: ['mockRule', 'method'],
-      where: { projectSign, url: apiUrl, isDeleted: 0 },
+      where: { projectSign, url: apiUrl, isDeleted: 0, on: 1 },
     });
 
     if (findMockRuleList.length) {
@@ -73,7 +73,7 @@ export class MockService {
       return res;
     } else {
       throw new HttpException(
-        '接口路径错误,检查路径和请求方法',
+        '接口路径错误,检查路径和请求方法并确认接口是否开启',
         HttpStatus.BAD_REQUEST,
       );
     }
