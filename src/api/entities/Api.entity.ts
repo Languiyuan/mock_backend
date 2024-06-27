@@ -83,6 +83,18 @@ export class Api {
   on: number;
 
   @Column({
+    default: 0,
+    comment: '参数校验是否启用',
+  })
+  paramsCheckOn: number;
+
+  @Column({
+    length: 1000,
+    comment: '传参规则',
+  })
+  params: string;
+
+  @Column({
     comment: '是否删除',
     default: 0,
   })

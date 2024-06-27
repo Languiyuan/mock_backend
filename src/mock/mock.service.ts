@@ -5,7 +5,13 @@ import { Repository } from 'typeorm';
 import { mock } from 'mockjs';
 import { Project } from 'src/project/entities/Project.entity';
 import { RedisService } from '../redis/redis.service';
+import { getType } from 'src/utils';
 
+interface Params {
+  name: string;
+  type: string;
+  required: boolean;
+}
 @Injectable()
 export class MockService {
   @InjectRepository(Api)
@@ -17,16 +23,45 @@ export class MockService {
   @Inject(RedisService)
   private redisService: RedisService;
 
-  async handlePost(projectSign: string, url: string) {
+  async handlePost(body, projectSign: string, url: string) {
     const apiUrl = await this.initMatch(projectSign, url);
 
     const findMockRuleList = await this.apiRepository.find({
-      select: ['mockRule', 'method'],
+      select: ['mockRule', 'method', 'paramsCheckOn', 'params'],
       where: { projectSign, url: apiUrl, isDeleted: 0, on: 1 },
     });
     if (findMockRuleList.length) {
       if (!(findMockRuleList[0].method === 'POST')) {
         throw new HttpException('error, 检查请求方法', HttpStatus.BAD_REQUEST);
+      }
+
+      const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
+      const params: Params[] = JSON.parse(findMockRuleList[0].params);
+
+      const paramsError = [];
+      if (paramsCheckOn && params.length) {
+        params.forEach((item) => {
+          if (item.required) {
+            if (body.hasOwnProperty(item.name)) {
+              const type = getType(body[item.name]);
+              if (!item.type.includes(type)) {
+                paramsError.push(`参数${item.name}类型错误`);
+              }
+            } else {
+              paramsError.push(`参数${item.name}缺失`);
+            }
+          } else {
+            if (body.hasOwnProperty(item.name)) {
+              const type = getType(body[item.name]);
+              if (!item.type.includes(type)) {
+                paramsError.push(`参数${item.name}类型错误`);
+              }
+            }
+          }
+        });
+      }
+      if (paramsError.length) {
+        throw new HttpException(paramsError.join(','), HttpStatus.BAD_REQUEST);
       }
 
       const mockRule = findMockRuleList[0].mockRule;
@@ -41,7 +76,7 @@ export class MockService {
     }
   }
 
-  async handleGet(projectSign: string, url: string) {
+  async handleGet(query, projectSign: string, url: string) {
     // 读 redis 获取到了就不走mysql了
     const redisKey = `/${projectSign}${url}`;
     const redisRes = await this.redisService.get(redisKey);
@@ -54,7 +89,7 @@ export class MockService {
     const apiUrl = await this.initMatch(projectSign, url);
 
     const findMockRuleList = await this.apiRepository.find({
-      select: ['mockRule', 'method'],
+      select: ['mockRule', 'method', 'paramsCheckOn', 'params'],
       where: { projectSign, url: apiUrl, isDeleted: 0, on: 1 },
     });
 
@@ -63,12 +98,41 @@ export class MockService {
         throw new HttpException('Error, 检查请求方法', HttpStatus.BAD_REQUEST);
       }
 
+      const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
+      const params: Params[] = JSON.parse(findMockRuleList[0].params);
+
+      const paramsError = [];
+      if (paramsCheckOn && params.length) {
+        params.forEach((item) => {
+          if (item.required) {
+            if (query.hasOwnProperty(item.name)) {
+              const type = getType(query[item.name]);
+              if (!item.type.includes(type)) {
+                paramsError.push(`参数${item.name}类型错误`);
+              }
+            } else {
+              paramsError.push(`参数${item.name}缺失`);
+            }
+          } else {
+            if (query.hasOwnProperty(item.name)) {
+              const type = getType(query[item.name]);
+              if (!item.type.includes(type)) {
+                paramsError.push(`参数${item.name}类型错误`);
+              }
+            }
+          }
+        });
+      }
+      if (paramsError.length) {
+        throw new HttpException(paramsError.join(','), HttpStatus.BAD_REQUEST);
+      }
+
       const mockRule = findMockRuleList[0].mockRule;
       const data = JSON.parse(JSON.parse(mockRule));
       const res: any = mock(data);
 
       // 存 redis
-      await this.redisService.set(redisKey, mockRule, 60 * 60 * 12);
+      // await this.redisService.set(redisKey, mockRule, 60 * 60 * 12);
 
       return res;
     } else {

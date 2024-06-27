@@ -59,6 +59,8 @@ export class ApiService {
     newApi.delay = apiDto.delay;
     newApi.description = apiDto.description;
     newApi.on = apiDto.on;
+    newApi.paramsCheckOn = apiDto.paramsCheckOn;
+    newApi.params = apiDto.params;
     newApi.createUserId = userId;
     newApi.updateUserId = userId;
 
@@ -83,6 +85,8 @@ export class ApiService {
       newApiHistory.delay = apiDto.delay;
       newApiHistory.description = apiDto.description;
       newApiHistory.on = apiDto.on;
+      newApiHistory.paramsCheckOn = apiDto.paramsCheckOn;
+      newApiHistory.params = apiDto.params;
       newApiHistory.createUserId = userId;
       newApiHistory.updateUserId = userId;
       await this.apiHistoryRepository.save(newApiHistory);
@@ -225,6 +229,8 @@ export class ApiService {
         newApiHistory.delay = apiDto.delay;
         newApiHistory.description = apiDto.description;
         newApiHistory.on = apiDto.on;
+        newApiHistory.paramsCheckOn = apiDto.paramsCheckOn;
+        newApiHistory.params = apiDto.params;
         newApiHistory.createUserId = userId;
         newApiHistory.updateUserId = userId;
         await this.apiHistoryRepository.save(newApiHistory);
@@ -239,6 +245,8 @@ export class ApiService {
         findApi.delay = apiDto.delay;
         findApi.description = apiDto.description;
         findApi.on = apiDto.on;
+        findApi.paramsCheckOn = apiDto.paramsCheckOn;
+        findApi.params = apiDto.params;
         findApi.updateUserId = userId;
 
         await this.apiRepository.save(findApi);

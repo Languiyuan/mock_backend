@@ -49,6 +49,12 @@ export class ApiDto {
   @IsString()
   description: string;
 
-  @IsIn([0, 1], { message: '数字只能是 0 或 1' })
+  @IsIn([0, 1], { message: 'on只能是 0 或 1' })
   on: number;
+
+  @IsIn([0, 1], { message: 'paramsCheckOn只能是 0 或 1' })
+  paramsCheckOn: number;
+
+  @IsString()
+  params: string;
 }

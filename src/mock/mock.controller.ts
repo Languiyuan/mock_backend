@@ -33,7 +33,11 @@ export class MockController {
     }
     const projectSign: string = routePathList[2];
     const url: string = `/${routePathList.slice(3).join('/')}`;
-    const data = await this.mockService.handlePost(projectSign, url);
+    const data = await this.mockService.handlePost(
+      request.body,
+      projectSign,
+      url,
+    );
     res.send(data);
   }
 
@@ -52,7 +56,11 @@ export class MockController {
     }
     const projectSign: string = routePathList[2];
     const url: string = `/${routePathList.slice(3).join('/')}`;
-    const data = await this.mockService.handleGet(projectSign, url);
+    const data = await this.mockService.handleGet(
+      request.query,
+      projectSign,
+      url,
+    );
     res.send(data);
   }
 }
