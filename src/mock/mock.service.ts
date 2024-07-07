@@ -24,6 +24,7 @@ export class MockService {
   private redisService: RedisService;
 
   async handlePost(body, projectSign: string, url: string) {
+    // TODO post redis
     const apiUrl = await this.initMatch(projectSign, url);
 
     const findMockRuleList = await this.apiRepository.find({
@@ -36,11 +37,23 @@ export class MockService {
       }
 
       const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
-      const params: Params[] = JSON.parse(findMockRuleList[0].params);
+      const parsedParams = JSON.parse(findMockRuleList[0].params);
+      const params: any[] = Array.isArray(parsedParams)
+        ? parsedParams
+        : [parsedParams];
 
       const paramsError = [];
       if (paramsCheckOn && params.length) {
-        params.forEach((item) => {
+        if (params[0] === 'array') {
+          if (getType(body) !== 'array') {
+            throw new HttpException(
+              '参数类型错误，应为数组',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+        }
+
+        params.forEach((item: Params) => {
           if (item.required) {
             if (body.hasOwnProperty(item.name)) {
               const type = getType(body[item.name]);
@@ -78,6 +91,7 @@ export class MockService {
 
   async handleGet(query, projectSign: string, url: string) {
     // 读 redis 获取到了就不走mysql了
+    // TODO redis 要重新设计 需要再存一份传参校验 包括是否开启传参
     const redisKey = `/${projectSign}${url}`;
     const redisRes = await this.redisService.get(redisKey);
     if (redisRes) {
