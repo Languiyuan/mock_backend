@@ -36,53 +36,51 @@ export class MockService {
         throw new HttpException('error, 检查请求方法', HttpStatus.BAD_REQUEST);
       }
 
-      try {
-        const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
-        if (paramsCheckOn && findMockRuleList[0].params) {
-          const parsedParams = JSON.parse(findMockRuleList[0].params);
-          const params: any[] = Array.isArray(parsedParams)
-            ? parsedParams
-            : [parsedParams];
+      const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
+      if (paramsCheckOn && findMockRuleList[0].params) {
+        const parsedParams = JSON.parse(findMockRuleList[0].params);
+        const params: any[] = Array.isArray(parsedParams)
+          ? parsedParams
+          : [parsedParams];
 
-          const paramsError = [];
-          if (params.length) {
-            if (params[0] === 'array') {
-              if (getType(body) !== 'array') {
-                throw new HttpException(
-                  '参数类型错误，应为数组',
-                  HttpStatus.BAD_REQUEST,
-                );
-              }
+        const paramsError = [];
+        if (params.length) {
+          if (params[0] === 'array') {
+            if (getType(body) !== 'array') {
+              throw new HttpException(
+                '参数类型错误，应为数组',
+                HttpStatus.BAD_REQUEST,
+              );
             }
+          }
 
-            params.forEach((item: Params) => {
-              if (item.required) {
-                if (body.hasOwnProperty(item.name)) {
-                  const type = getType(body[item.name]);
-                  if (!item.type.includes(type)) {
-                    paramsError.push(`参数${item.name}类型错误`);
-                  }
-                } else {
-                  paramsError.push(`参数${item.name}缺失`);
+          params.forEach((item: Params) => {
+            if (item.required) {
+              if (body.hasOwnProperty(item.name)) {
+                const type = getType(body[item.name]);
+                if (!item.type.includes(type)) {
+                  paramsError.push(`参数${item.name}类型错误`);
                 }
               } else {
-                if (body.hasOwnProperty(item.name)) {
-                  const type = getType(body[item.name]);
-                  if (!item.type.includes(type)) {
-                    paramsError.push(`参数${item.name}类型错误`);
-                  }
+                paramsError.push(`参数${item.name}缺失`);
+              }
+            } else {
+              if (body.hasOwnProperty(item.name)) {
+                const type = getType(body[item.name]);
+                if (!item.type.includes(type)) {
+                  paramsError.push(`参数${item.name}类型错误`);
                 }
               }
-            });
-          }
-          if (paramsError.length) {
-            throw new HttpException(
-              paramsError.join(','),
-              HttpStatus.BAD_REQUEST,
-            );
-          }
+            }
+          });
         }
-      } catch (error) {}
+        if (paramsError.length) {
+          throw new HttpException(
+            paramsError.join(','),
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+      }
 
       const mockRule = findMockRuleList[0].mockRule;
       const res: any = mock(JSON.parse(JSON.parse(mockRule)));
@@ -123,30 +121,28 @@ export class MockService {
 
       const paramsError = [];
       if (paramsCheckOn && findMockRuleList[0].params) {
-        try {
-          const params: Params[] = JSON.parse(findMockRuleList[0].params);
+        const params: Params[] = JSON.parse(findMockRuleList[0].params);
 
-          params.length &&
-            params.forEach((item) => {
-              if (item.required) {
-                if (query.hasOwnProperty(item.name)) {
-                  const type = getType(query[item.name]);
-                  if (!item.type.includes(type)) {
-                    paramsError.push(`参数${item.name}类型错误`);
-                  }
-                } else {
-                  paramsError.push(`参数${item.name}缺失`);
+        params.length &&
+          params.forEach((item) => {
+            if (item.required) {
+              if (query.hasOwnProperty(item.name)) {
+                const type = getType(query[item.name]);
+                if (!item.type.includes(type)) {
+                  paramsError.push(`参数${item.name}类型错误`);
                 }
               } else {
-                if (query.hasOwnProperty(item.name)) {
-                  const type = getType(query[item.name]);
-                  if (!item.type.includes(type)) {
-                    paramsError.push(`参数${item.name}类型错误`);
-                  }
+                paramsError.push(`参数${item.name}缺失`);
+              }
+            } else {
+              if (query.hasOwnProperty(item.name)) {
+                const type = getType(query[item.name]);
+                if (!item.type.includes(type)) {
+                  paramsError.push(`参数${item.name}类型错误`);
                 }
               }
-            });
-        } catch (error) {}
+            }
+          });
       }
       if (paramsError.length) {
         throw new HttpException(paramsError.join(','), HttpStatus.BAD_REQUEST);
