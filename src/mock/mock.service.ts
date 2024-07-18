@@ -83,7 +83,11 @@ export class MockService {
       }
 
       const mockRule = findMockRuleList[0].mockRule;
-      const res: any = mock(JSON.parse(JSON.parse(mockRule)));
+      const parseMockRule =
+        typeof JSON.parse(mockRule) === 'object'
+          ? JSON.parse(mockRule)
+          : JSON.parse(JSON.parse(mockRule));
+      const res: any = mock(parseMockRule);
 
       return res;
     } else {
@@ -149,8 +153,11 @@ export class MockService {
       }
 
       const mockRule = findMockRuleList[0].mockRule;
-      const data = JSON.parse(JSON.parse(mockRule));
-      const res: any = mock(data);
+      const parseMockRule =
+        typeof JSON.parse(mockRule) === 'object'
+          ? JSON.parse(mockRule)
+          : JSON.parse(JSON.parse(mockRule));
+      const res: any = mock(parseMockRule);
 
       // 存 redis
       // await this.redisService.set(redisKey, mockRule, 60 * 60 * 12);

@@ -8,6 +8,11 @@ import { ApiHistory } from './entities/ApiHistory.entity';
 import { Project } from 'src/project/entities/Project.entity';
 import { validate } from 'class-validator';
 import { RedisService } from '../redis/redis.service';
+import { HttpService } from '@nestjs/axios';
+// import { lastValueFrom } from 'rxjs';
+import * as swaggerParseMock from 'swagger-parser-lanmock';
+import { ProjectService } from 'src/project/project.service';
+
 @Injectable()
 export class ApiService {
   // apiRepository
@@ -25,6 +30,11 @@ export class ApiService {
   // redis
   @Inject(RedisService)
   private redisService: RedisService;
+  // axios httpServer
+  @Inject(HttpService)
+  private httpService: HttpService;
+  @Inject(ProjectService)
+  private projectService: ProjectService;
 
   // 添加接口
   async addApi(userId: number, apiDto: ApiDto) {
@@ -386,6 +396,117 @@ export class ApiService {
         });
       }
     }
+    return resultVo;
+  }
+
+  // 导入swagger
+  async uploadProjectBySwagger(
+    path: string,
+    userId: number,
+    projectId: number,
+  ) {
+    // const file = await lastValueFrom(
+    //   this.httpService.get(
+    //     `http://localhost:3000/lanMock/api/getUploadsFile?path=${path}`,
+    //   ),
+    // );
+    // // 接口文档
+    // const fileJSON = data.data
+    const specs = await swaggerParseMock(
+      `http://localhost:3000/lanMock/api/getUploadsFile?path=${path}`,
+    );
+    // 生成项目目录
+    try {
+      if (specs.tags?.length) {
+        for (const tag of specs.tags) {
+          tag.name &&
+            (await this.projectService.addFolder(userId, {
+              folderName: tag.name,
+              projectId: projectId,
+            }));
+        }
+      }
+    } catch (e) {}
+
+    const folderList = await this.projectService.queryFolderList(projectId);
+    // 添加api
+    const resultVo = [];
+    try {
+      const newApi = new ApiDto();
+
+      const keys = Object.keys(specs.paths);
+      if (keys.length) {
+        for (const key of keys) {
+          try {
+            let method = '';
+            if (specs.paths[key].hasOwnProperty('get')) {
+              method = 'get';
+            } else if (specs.paths[key].hasOwnProperty('post')) {
+              method = 'post';
+            } else {
+              throw new Error('仅支持get|post');
+            }
+            const apiParseData = specs.paths[key][method] || {};
+            // 获取tag 即目录
+            let folderId: null | number = null;
+            if (apiParseData.tags?.length) {
+              const folder = folderList.find(
+                (item) => item.name === apiParseData.tags[0],
+              );
+              folderId = folder?.id || null;
+            }
+
+            let mockRule: string = '';
+            if (apiParseData.responses['200']) {
+              mockRule = apiParseData.responses['200'].example || '';
+            }
+
+            const dto = {
+              id: 1,
+              projectId: projectId,
+              folderId: folderId,
+              name: apiParseData.summary,
+              url: key,
+              mockRule: mockRule,
+              method: method.toLocaleUpperCase(),
+              delay: 0,
+              description:
+                apiParseData.summary + '|' + apiParseData.description,
+              on: 1,
+              paramsCheckOn: 0,
+              params: '',
+              isDeleted: 0,
+            };
+
+            const apiDto: ApiDto = Object.assign(newApi, dto);
+            try {
+              const errors = await validate(apiDto);
+              if (errors.length > 0) {
+                const allValueList = errors.map((error) => {
+                  const valueList = Object.values(error.constraints);
+                  return valueList.join(',');
+                });
+                throw new Error(allValueList.join(','));
+              } else {
+                await this.addApi(userId, apiDto);
+                resultVo.push({
+                  url: apiDto.url,
+                  status: 'success',
+                  error: null,
+                });
+              }
+            } catch (error) {
+              resultVo.push({
+                url: apiDto.url,
+                status: 'failed',
+                error: error.message,
+              });
+            }
+          } catch (error) {}
+        }
+      }
+    } catch (e) {}
+
     return resultVo;
   }
 }

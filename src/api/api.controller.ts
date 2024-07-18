@@ -5,6 +5,8 @@ import {
   Res,
   UseInterceptors,
   UploadedFile,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { ApiService } from './api.service';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
@@ -13,6 +15,7 @@ import { Response } from 'express';
 import * as fs from 'fs-extra';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProjectPermissionInterceptor } from 'src/project-permission.interceptor';
+import { NotFormatResponse } from '../custom.decorator';
 
 @Controller('api')
 @UseInterceptors(ProjectPermissionInterceptor)
@@ -146,6 +149,7 @@ export class ApiController {
     @UploadedFile() file: Express.Multer.File,
     @UserInfo('userId') userId: number,
     @Body('projectId') projectId: number,
+    @Body('type') type: string,
   ) {
     // 读取文件内容
     const resultVo = await fs
@@ -153,14 +157,29 @@ export class ApiController {
       .then(async (data) => {
         // 如果内容是 JSON 格式，你可以解析它
         try {
-          const jsonData = JSON.parse(data);
-          const res = await this.apiService.uploadProjectFile(
-            userId,
-            projectId,
-            jsonData,
-          );
+          // swagger json import
+          if (type === 'swaggerJson') {
+            console.log(file.path);
+            const res = await this.apiService.uploadProjectBySwagger(
+              file.path,
+              userId,
+              projectId,
+            );
 
-          return res;
+            return res;
+          }
+
+          // lanmock self import
+          if (type === 'normalJson') {
+            const jsonData = JSON.parse(data);
+            const res = await this.apiService.uploadProjectFile(
+              userId,
+              projectId,
+              jsonData,
+            );
+
+            return res;
+          }
         } catch (error) {
           console.error('解析 JSON 时发生错误:', error);
         }
@@ -170,6 +189,17 @@ export class ApiController {
       });
     // 删除文件
     fs.unlink(file.path);
+    return resultVo;
+  }
+
+  // 读取uplaods中文件作为接口返回文件
+  @Get('getUploadsFile')
+  @NotFormatResponse()
+  async getUploadsFile(@Query('path') path: string) {
+    const resultVo = await fs.readFile(path, 'utf8').then((data) => {
+      return data;
+    });
+
     return resultVo;
   }
 }

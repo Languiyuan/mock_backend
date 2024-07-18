@@ -17,7 +17,7 @@ async function bootstrap() {
   // set context
   app.setGlobalPrefix('/lanMock');
   app.useStaticAssets(join(__dirname, '..', 'public'), {
-    prefix: '/static/',
+    prefix: '/',
   });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new FormatResponseInterceptor(new Reflector()));
