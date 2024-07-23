@@ -12,9 +12,13 @@ import { HttpService } from '@nestjs/axios';
 // import { lastValueFrom } from 'rxjs';
 import * as swaggerParseMock from 'swagger-parser-lanmock';
 import { ProjectService } from 'src/project/project.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApiService {
+  // ConfigService
+  @Inject(ConfigService)
+  private configService: ConfigService;
   // apiRepository
   @InjectRepository(Api)
   private apiRepository: Repository<Api>;
@@ -413,7 +417,7 @@ export class ApiService {
     // // 接口文档
     // const fileJSON = data.data
     const specs = await swaggerParseMock(
-      `http://localhost:3000/lanMock/api/getUploadsFile?path=${path}`,
+      `${this.configService.get('nest_server_origin')}:${this.configService.get('nest_server_port')}/lanMock/api/getUploadsFile?path=${path}`,
     );
     // 生成项目目录
     try {
