@@ -11,6 +11,12 @@ interface Params {
   name: string;
   type: string;
   required: boolean;
+  deliverWay: string;
+}
+interface ParamsMap {
+  bodyParamsType: string;
+  bodyParams: Params[];
+  queryParams: Params[];
 }
 @Injectable()
 export class MockService {
@@ -23,7 +29,7 @@ export class MockService {
   @Inject(RedisService)
   private redisService: RedisService;
 
-  async handlePost(body, projectSign: string, url: string) {
+  async handlePost(body, query, projectSign: string, url: string) {
     // TODO post redis
     const apiUrl = await this.initMatch(projectSign, url);
 
@@ -36,57 +42,18 @@ export class MockService {
         throw new HttpException('error, 检查请求方法', HttpStatus.BAD_REQUEST);
       }
 
+      // 参数校验
       const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
       if (paramsCheckOn && findMockRuleList[0].params) {
-        const parsedParams = JSON.parse(findMockRuleList[0].params);
-        const params: any[] = Array.isArray(parsedParams)
-          ? parsedParams
-          : [parsedParams];
-
-        const paramsError = [];
-        if (params.length) {
-          if (params[0] === 'array') {
-            if (getType(body) !== 'array') {
-              throw new HttpException(
-                '参数类型错误，应为数组',
-                HttpStatus.BAD_REQUEST,
-              );
-            }
-          }
-
-          params.forEach((item: Params) => {
-            if (item.required) {
-              if (body.hasOwnProperty(item.name)) {
-                const type = getType(body[item.name]);
-                if (!item.type.includes(type)) {
-                  paramsError.push(`参数${item.name}类型错误`);
-                }
-              } else {
-                paramsError.push(`参数${item.name}缺失`);
-              }
-            } else {
-              if (body.hasOwnProperty(item.name)) {
-                const type = getType(body[item.name]);
-                if (!item.type.includes(type)) {
-                  paramsError.push(`参数${item.name}类型错误`);
-                }
-              }
-            }
-          });
-        }
-        if (paramsError.length) {
-          throw new HttpException(
-            paramsError.join(','),
-            HttpStatus.BAD_REQUEST,
-          );
-        }
+        this.validateParams(query, body, findMockRuleList[0].params);
       }
 
       const mockRule = findMockRuleList[0].mockRule;
+      const firstParseData = JSON.parse(mockRule);
       const parseMockRule =
-        typeof JSON.parse(mockRule) === 'object'
-          ? JSON.parse(mockRule)
-          : JSON.parse(JSON.parse(mockRule));
+        typeof firstParseData === 'object'
+          ? firstParseData
+          : JSON.parse(firstParseData);
       const res: any = mock(parseMockRule);
 
       return res;
@@ -121,42 +88,19 @@ export class MockService {
         throw new HttpException('Error, 检查请求方法', HttpStatus.BAD_REQUEST);
       }
 
+      // 参数校验
       const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
+      paramsCheckOn &&
+        findMockRuleList[0].params &&
+        this.validateParams(query, null, findMockRuleList[0].params);
 
-      const paramsError = [];
-      if (paramsCheckOn && findMockRuleList[0].params) {
-        const params: Params[] = JSON.parse(findMockRuleList[0].params);
-
-        params.length &&
-          params.forEach((item) => {
-            if (item.required) {
-              if (query.hasOwnProperty(item.name)) {
-                const type = getType(query[item.name]);
-                if (!item.type.includes(type)) {
-                  paramsError.push(`参数${item.name}类型错误`);
-                }
-              } else {
-                paramsError.push(`参数${item.name}缺失`);
-              }
-            } else {
-              if (query.hasOwnProperty(item.name)) {
-                const type = getType(query[item.name]);
-                if (!item.type.includes(type)) {
-                  paramsError.push(`参数${item.name}类型错误`);
-                }
-              }
-            }
-          });
-      }
-      if (paramsError.length) {
-        throw new HttpException(paramsError.join(','), HttpStatus.BAD_REQUEST);
-      }
-
+      // swagger导入的 不用解析两层
       const mockRule = findMockRuleList[0].mockRule;
+      const firstParseData = JSON.parse(mockRule);
       const parseMockRule =
-        typeof JSON.parse(mockRule) === 'object'
-          ? JSON.parse(mockRule)
-          : JSON.parse(JSON.parse(mockRule));
+        typeof firstParseData === 'object'
+          ? firstParseData
+          : JSON.parse(firstParseData);
       const res: any = mock(parseMockRule);
 
       // 存 redis
@@ -171,6 +115,7 @@ export class MockService {
     }
   }
 
+  // 初始化匹配
   async initMatch(projectSign: string, url: string) {
     // 获取baseUrl
     const findProject = await this.projectRepository.findOneBy({
@@ -187,5 +132,56 @@ export class MockService {
       throw new HttpException('baseUrl错误,请检查路径', HttpStatus.BAD_REQUEST);
     }
     return apiUrl;
+  }
+
+  // 传参校验
+  validateParams(query, body, paramsJosn) {
+    const paramsError = [];
+    const paramsMap: ParamsMap = JSON.parse(paramsJosn);
+
+    paramsMap.queryParams.length &&
+      paramsMap.queryParams.forEach((item) => {
+        if (item.required && !query.hasOwnProperty(item.name)) {
+          paramsError.push(`query参数${item.name}缺失`);
+          return; // 如果是必需且不存在，则直接返回，不需要继续检查类型
+        }
+
+        if (query.hasOwnProperty(item.name)) {
+          const type = getType(query[item.name]);
+          if (!item.type.includes(type)) {
+            paramsError.push(`query参数${item.name}类型错误应为${item.type}`);
+          }
+        }
+      });
+
+    if (body) {
+      if (paramsMap.bodyParamsType === 'array' && getType(body) !== 'array') {
+        paramsError.push(`body参数类型错误应为数组`);
+      }
+
+      if (paramsMap.bodyParamsType === 'object') {
+        if (getType(body) !== 'object') {
+          paramsError.push(`body参数类型错误应为object`);
+        } else {
+          paramsMap.bodyParams.length &&
+            paramsMap.bodyParams.forEach((item: Params) => {
+              if (body.hasOwnProperty(item.name)) {
+                const type = getType(body[item.name]);
+                if (!item.type.includes(type)) {
+                  paramsError.push(
+                    `body参数${item.name}类型错误应为${item.type}`,
+                  );
+                }
+              } else if (item.required) {
+                paramsError.push(`body参数${item.name}缺失`);
+              }
+            });
+        }
+      }
+    }
+
+    if (paramsError.length) {
+      throw new HttpException(paramsError.join(';'), HttpStatus.BAD_REQUEST);
+    }
   }
 }

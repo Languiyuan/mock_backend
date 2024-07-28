@@ -21,6 +21,7 @@ export class MockController {
   @Post('*')
   async handlePost(
     @Body() bodyData: any,
+    @Query() queryData: any,
     @Req() request: Request,
     @Res() res: Response,
   ) {
@@ -34,7 +35,8 @@ export class MockController {
     const projectSign: string = routePathList[2];
     const url: string = `/${routePathList.slice(3).join('/')}`;
     const data = await this.mockService.handlePost(
-      request.body,
+      bodyData,
+      queryData,
       projectSign,
       url,
     );
@@ -56,11 +58,7 @@ export class MockController {
     }
     const projectSign: string = routePathList[2];
     const url: string = `/${routePathList.slice(3).join('/')}`;
-    const data = await this.mockService.handleGet(
-      request.query,
-      projectSign,
-      url,
-    );
+    const data = await this.mockService.handleGet(queryData, projectSign, url);
     res.send(data);
   }
 }
