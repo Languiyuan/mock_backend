@@ -14,6 +14,18 @@ import * as swaggerParseMock from 'swagger-parser-lanmock';
 import { ProjectService } from 'src/project/project.service';
 import { ConfigService } from '@nestjs/config';
 
+interface SingleParamsRule {
+  name: string;
+  type: string[];
+  required: boolean;
+}
+
+interface ApiParamsRule {
+  bodyParamsType: string; // 'object' or 'array'
+  bodyParams: SingleParamsRule[];
+  queryParams: SingleParamsRule[];
+}
+
 @Injectable()
 export class ApiService {
   // ConfigService
@@ -421,7 +433,7 @@ export class ApiService {
     );
     // 生成项目目录
     try {
-      if (specs.tags?.length) {
+      if (specs?.tags?.length) {
         for (const tag of specs.tags) {
           tag.name &&
             (await this.projectService.addFolder(userId, {
@@ -435,81 +447,85 @@ export class ApiService {
     const folderList = await this.projectService.queryFolderList(projectId);
     // 添加api
     const resultVo = [];
-    try {
-      const newApi = new ApiDto();
 
-      const keys = Object.keys(specs.paths);
-      if (keys.length) {
-        for (const key of keys) {
+    const newApi = new ApiDto();
+
+    const keys = specs?.paths ? Object.keys(specs.paths) : [];
+    if (keys.length) {
+      for (const key of keys) {
+        try {
+          let method = '';
+          if (specs.paths[key].hasOwnProperty('get')) {
+            method = 'get';
+          } else if (specs.paths[key].hasOwnProperty('post')) {
+            method = 'post';
+          } else {
+            throw new Error('仅支持get|post');
+          }
+          const apiParseData = specs.paths[key][method] || {};
+          // 获取tag 即目录
+          let folderId: null | number = null;
+          if (apiParseData.tags?.length) {
+            const folder = folderList.find(
+              (item) => item.name === apiParseData.tags[0],
+            );
+            folderId = folder?.id || null;
+          }
+
+          let mockRule: string = '';
+          if (apiParseData.responses['200']) {
+            mockRule = apiParseData.responses['200'].example || '';
+          }
+
+          const dto = {
+            id: 1,
+            projectId: projectId,
+            folderId: folderId,
+            name: apiParseData.summary,
+            url: key,
+            mockRule: mockRule,
+            method: method.toLocaleUpperCase(),
+            delay: 0,
+            description: apiParseData.summary + '|' + apiParseData.description,
+            on: 1,
+            paramsCheckOn: 0,
+            params: '',
+            isDeleted: 0,
+          };
+
+          const apiDto: ApiDto = Object.assign(newApi, dto);
           try {
-            let method = '';
-            if (specs.paths[key].hasOwnProperty('get')) {
-              method = 'get';
-            } else if (specs.paths[key].hasOwnProperty('post')) {
-              method = 'post';
+            const errors = await validate(apiDto);
+            if (errors.length > 0) {
+              const allValueList = errors.map((error) => {
+                const valueList = Object.values(error.constraints);
+                return valueList.join(',');
+              });
+              throw new Error(allValueList.join(','));
             } else {
-              throw new Error('仅支持get|post');
-            }
-            const apiParseData = specs.paths[key][method] || {};
-            // 获取tag 即目录
-            let folderId: null | number = null;
-            if (apiParseData.tags?.length) {
-              const folder = folderList.find(
-                (item) => item.name === apiParseData.tags[0],
-              );
-              folderId = folder?.id || null;
-            }
-
-            let mockRule: string = '';
-            if (apiParseData.responses['200']) {
-              mockRule = apiParseData.responses['200'].example || '';
-            }
-
-            const dto = {
-              id: 1,
-              projectId: projectId,
-              folderId: folderId,
-              name: apiParseData.summary,
-              url: key,
-              mockRule: mockRule,
-              method: method.toLocaleUpperCase(),
-              delay: 0,
-              description:
-                apiParseData.summary + '|' + apiParseData.description,
-              on: 1,
-              paramsCheckOn: 0,
-              params: '',
-              isDeleted: 0,
-            };
-
-            const apiDto: ApiDto = Object.assign(newApi, dto);
-            try {
-              const errors = await validate(apiDto);
-              if (errors.length > 0) {
-                const allValueList = errors.map((error) => {
-                  const valueList = Object.values(error.constraints);
-                  return valueList.join(',');
-                });
-                throw new Error(allValueList.join(','));
-              } else {
-                await this.addApi(userId, apiDto);
-                resultVo.push({
-                  url: apiDto.url,
-                  status: 'success',
-                  error: null,
-                });
-              }
-            } catch (error) {
+              await this.addApi(userId, apiDto);
               resultVo.push({
                 url: apiDto.url,
-                status: 'failed',
-                error: error.message,
+                status: 'success',
+                error: null,
               });
             }
-          } catch (error) {}
+          } catch (error) {
+            resultVo.push({
+              url: apiDto.url,
+              status: 'failed',
+              error: error.message,
+            });
+          }
+        } catch (error) {
+          resultVo.push({
+            url: key,
+            status: 'failed',
+            error: error.message,
+          });
         }
       }
-    } catch (e) {}
+    }
 
     return resultVo;
   }
