@@ -14,17 +14,17 @@ import * as swaggerParseMock from 'swagger-parser-lanmock';
 import { ProjectService } from 'src/project/project.service';
 import { ConfigService } from '@nestjs/config';
 
-interface SingleParamsRule {
-  name: string;
-  type: string[];
-  required: boolean;
-}
+// interface SingleParamsRule {
+//   name: string;
+//   type: string[];
+//   required: boolean;
+// }
 
-interface ApiParamsRule {
-  bodyParamsType: string; // 'object' or 'array'
-  bodyParams: SingleParamsRule[];
-  queryParams: SingleParamsRule[];
-}
+// interface ApiParamsRule {
+//   bodyParamsType: string; // 'object' or 'array'
+//   bodyParams: SingleParamsRule[];
+//   queryParams: SingleParamsRule[];
+// }
 
 @Injectable()
 export class ApiService {
@@ -489,7 +489,9 @@ export class ApiService {
             description: apiParseData.summary + '|' + apiParseData.description,
             on: 1,
             paramsCheckOn: 0,
-            params: '',
+            params: apiParseData.params
+              ? JSON.stringify(apiParseData.params)
+              : '',
             isDeleted: 0,
           };
 

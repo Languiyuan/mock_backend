@@ -89,7 +89,7 @@ export class Api {
   paramsCheckOn: number;
 
   @Column({
-    length: 1000,
+    length: 10000,
     comment: '传参规则',
   })
   params: string;
