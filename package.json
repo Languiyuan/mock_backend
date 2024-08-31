@@ -38,7 +38,7 @@
     "redis": "^4.6.13",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "swagger-parser-lanmock": "^1.0.3",
+    "swagger-parser-lanmock": "1.0.7",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {

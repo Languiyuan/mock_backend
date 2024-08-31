@@ -421,13 +421,6 @@ export class ApiService {
     userId: number,
     projectId: number,
   ) {
-    // const file = await lastValueFrom(
-    //   this.httpService.get(
-    //     `http://localhost:3000/lanMock/api/getUploadsFile?path=${path}`,
-    //   ),
-    // );
-    // // 接口文档
-    // const fileJSON = data.data
     const specs = await swaggerParseMock(
       `${this.configService.get('nest_server_origin')}:${this.configService.get('nest_server_port')}/lanMock/api/getUploadsFile?path=${path}`,
     );

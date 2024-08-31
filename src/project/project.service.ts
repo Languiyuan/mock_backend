@@ -48,7 +48,8 @@ export class ProjectService {
     newProject.createUserId = userId;
     newProject.sign = generateRandomString(20);
     newProject.updateUserId = userId;
-
+    newProject.apiExportTemplate =
+      '// lmDescription \n export const lmFuncName = (params) => {\n    return http.lmMethod("lmBaseUrl" + "lmUrl", params)\n}';
     try {
       await this.projectRepository.save(newProject);
 
@@ -132,6 +133,9 @@ export class ProjectService {
     findProject.name = editProjectDto.name;
     findProject.description = editProjectDto.description;
     findProject.updateUserId = userId;
+    if (editProjectDto.apiExportTemplate) {
+      findProject.apiExportTemplate = editProjectDto.apiExportTemplate;
+    }
 
     try {
       await this.projectRepository.save(findProject);

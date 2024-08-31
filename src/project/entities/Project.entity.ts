@@ -38,6 +38,12 @@ export class Project {
   description: string;
 
   @Column({
+    length: 1000,
+    comment: 'api导出模板',
+  })
+  apiExportTemplate: string;
+
+  @Column({
     comment: '创建者id',
   })
   createUserId: number;
