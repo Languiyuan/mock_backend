@@ -368,7 +368,7 @@ export class ApiService {
   // 导出项目json文件
   async exportProjectAllApi(projectId: number) {
     const findApiList = await this.apiRepository.find({
-      where: { projectId },
+      where: { projectId, isDeleted: 0 },
     });
     const list = findApiList.map((item) => {
       return {

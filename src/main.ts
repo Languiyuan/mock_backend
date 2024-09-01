@@ -11,13 +11,17 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 // import { ProjectPermissionInterceptor } from './project-permission.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: true,
-  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   // set context
   app.setGlobalPrefix('/lanMock');
   app.useStaticAssets(join(__dirname, '..', 'public'), {
     prefix: '/',
+  });
+  app.enableCors({
+    origin: '*', // 从环境变量读取 CORS 来源
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Origin, Content-Type, Accept, Authorization',
+    credentials: true,
   });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new FormatResponseInterceptor(new Reflector()));
