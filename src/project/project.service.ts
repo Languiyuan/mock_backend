@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
 import { CreateProjectDto, EditProjectDto } from './dto/create-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/Project.entity';
@@ -8,6 +8,7 @@ import { User } from 'src/user/entities/User.entity';
 import { Folder } from './entities/Folder.entity';
 import { FolderDto } from './dto/Folder.dto';
 import { Api } from 'src/api/entities/Api.entity';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class ProjectService {
@@ -26,7 +27,9 @@ export class ProjectService {
   // API表
   @InjectRepository(Api)
   private apiRepository: Repository<Api>;
-
+  // redis
+  @Inject(RedisService)
+  private redisService: RedisService;
   // 创建项目
   async add(createProjectDto: CreateProjectDto, userId: number) {
     function generateRandomString(length: number) {
@@ -92,6 +95,11 @@ export class ProjectService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    try {
+      // redis 删除所有项目redis data
+      await this.redisService.deleteKeys(`/${findProject.sign}*`);
+    } catch (error) {}
 
     findProject.isDeleted = 1;
     findProject.updateUserId = userId;

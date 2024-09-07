@@ -18,6 +18,13 @@ interface ParamsMap {
   bodyParams: Params[];
   queryParams: Params[];
 }
+
+interface ApiRedis {
+  mockRule: string;
+  paramsCheckOn: number;
+  params: string;
+  method: string;
+}
 @Injectable()
 export class MockService {
   @InjectRepository(Api)
@@ -31,6 +38,23 @@ export class MockService {
 
   async handlePost(body, query, projectSign: string, url: string) {
     // TODO post redis
+    // 读 redis 获取到了就不走mysql了
+    const redisKey = `/${projectSign}${url}`;
+    const redisRes: ApiRedis | Record<string, any> =
+      await this.redisService.hGetAll(redisKey);
+    if (redisRes?.mockRule) {
+      if (!(redisRes.method === 'POST')) {
+        throw new HttpException('Error, 检查请求方法', HttpStatus.BAD_REQUEST);
+      }
+
+      redisRes.paramsCheckOn &&
+        redisRes.params &&
+        this.validateParams(query, null, JSON.parse(redisRes.params));
+      const data = JSON.parse(redisRes.mockRule);
+      const res: any = mock(data);
+      return res;
+    }
+
     const apiUrl = await this.initMatch(projectSign, url);
 
     const findMockRuleList = await this.apiRepository.find({
@@ -41,6 +65,15 @@ export class MockService {
       if (!(findMockRuleList[0].method === 'POST')) {
         throw new HttpException('error, 检查请求方法', HttpStatus.BAD_REQUEST);
       }
+
+      // 存 redis 12 hours 过期
+      const dataToRedis = {
+        mockRule: findMockRuleList[0].mockRule,
+        paramsCheckOn: findMockRuleList[0].paramsCheckOn,
+        params: findMockRuleList[0].params,
+        method: findMockRuleList[0].method,
+      };
+      await this.redisService.hSet(redisKey, dataToRedis, 1000 * 60 * 60 * 12);
 
       // 参数校验
       const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
@@ -67,11 +100,18 @@ export class MockService {
 
   async handleGet(query, projectSign: string, url: string) {
     // 读 redis 获取到了就不走mysql了
-    // TODO redis 要重新设计 需要再存一份传参校验 包括是否开启传参
     const redisKey = `/${projectSign}${url}`;
-    const redisRes = await this.redisService.get(redisKey);
-    if (redisRes) {
-      const data = JSON.parse(JSON.parse(redisRes));
+    const redisRes: ApiRedis | Record<string, any> =
+      await this.redisService.hGetAll(redisKey);
+    if (redisRes?.mockRule) {
+      if (!(redisRes.method === 'GET')) {
+        throw new HttpException('Error, 检查请求方法', HttpStatus.BAD_REQUEST);
+      }
+
+      redisRes.paramsCheckOn &&
+        redisRes.params &&
+        this.validateParams(query, null, JSON.parse(redisRes.params));
+      const data = JSON.parse(redisRes.mockRule);
       const res: any = mock(data);
       return res;
     }
@@ -88,6 +128,15 @@ export class MockService {
         throw new HttpException('Error, 检查请求方法', HttpStatus.BAD_REQUEST);
       }
 
+      // 存 redis 12 hours 过期
+      const dataToRedis = {
+        mockRule: findMockRuleList[0].mockRule,
+        paramsCheckOn: findMockRuleList[0].paramsCheckOn,
+        params: findMockRuleList[0].params,
+        method: findMockRuleList[0].method,
+      };
+      await this.redisService.hSet(redisKey, dataToRedis, 1000 * 60 * 60 * 12);
+
       // 参数校验
       const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
       paramsCheckOn &&
@@ -103,9 +152,6 @@ export class MockService {
           : JSON.parse(firstParseData);
       const res: any = mock(parseMockRule);
 
-      // 存 redis
-      // await this.redisService.set(redisKey, mockRule, 60 * 60 * 12);
-
       return res;
     } else {
       throw new HttpException(
@@ -120,6 +166,7 @@ export class MockService {
     // 获取baseUrl
     const findProject = await this.projectRepository.findOneBy({
       sign: projectSign,
+      isDeleted: 0,
     });
 
     if (!findProject) {
@@ -135,9 +182,9 @@ export class MockService {
   }
 
   // 传参校验
-  validateParams(query, body, paramsJosn) {
+  validateParams(query, body, paramsJson) {
     const paramsError = [];
-    const paramsMap: ParamsMap = JSON.parse(paramsJosn);
+    const paramsMap: ParamsMap = JSON.parse(paramsJson);
 
     paramsMap.queryParams.length &&
       paramsMap.queryParams.forEach((item) => {
