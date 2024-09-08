@@ -171,8 +171,20 @@ export class ProjectService {
       const findMembers = await this.userProjectRepository.find({
         where: { projectId: findProject.id, isDeleted: 0 },
       });
+
+      // 权限判断
+      if (
+        !findMembers.find((item) => !item.isDeleted && item.userId === userId)
+      ) {
+        throw new HttpException(
+          '该项目当前账号无权查看',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       //  项目成员
       let findMembersInfoList = [];
+
       if (findMembers.length) {
         const userIds = findMembers.map((item) => item.userId);
         findMembersInfoList = await this.userRepository
@@ -193,14 +205,6 @@ export class ProjectService {
         createUsername: findUser.username,
         members: members,
       };
-      // if (findProject.createUserId === userId) {
-
-      // } else {
-      //   throw new HttpException(
-      //     '该项目当前账号无权查看',
-      //     HttpStatus.BAD_REQUEST,
-      //   );
-      // }
     } else {
       throw new HttpException('项目不存在', HttpStatus.BAD_REQUEST);
     }

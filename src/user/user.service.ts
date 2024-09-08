@@ -96,13 +96,11 @@ export class UserService {
     return vo;
   }
 
-  async findUserById(userId: number, isAdmin: boolean) {
+  async findUserById(userId: number) {
     const user = await this.userRepository.findOne({
       where: {
         id: userId,
-        isAdmin,
       },
-      relations: ['roles', 'roles.permissions'],
     });
 
     return {
