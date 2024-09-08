@@ -240,6 +240,13 @@ export class UserService {
   }
 
   async initData() {
+    const findData = await this.userRepository.findOne({
+      where: { username: 'admin' },
+    });
+
+    if (findData) {
+      return '初始化已完成，请勿重复';
+    }
     const user1 = new User();
     user1.username = 'admin';
     user1.password = md5('123456');
