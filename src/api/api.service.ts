@@ -481,9 +481,8 @@ export class ApiService {
             method: method.toLocaleUpperCase(),
             delay: 0,
             description:
-              apiParseData.summary + apiParseData.description
-                ? `|${apiParseData.description}`
-                : '',
+              apiParseData.summary +
+              (apiParseData.description ? `|${apiParseData.description}` : ''),
             on: 1,
             paramsCheckOn: 0,
             params: apiParseData.params

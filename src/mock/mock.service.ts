@@ -37,7 +37,6 @@ export class MockService {
   private redisService: RedisService;
 
   async handlePost(body, query, projectSign: string, url: string) {
-    // TODO post redis
     // 读 redis 获取到了就不走mysql了
     const redisKey = `/${projectSign}${url}`;
     const redisRes: ApiRedis | Record<string, any> =
@@ -49,7 +48,7 @@ export class MockService {
 
       redisRes.paramsCheckOn &&
         redisRes.params &&
-        this.validateParams(query, null, JSON.parse(redisRes.params));
+        this.validateParams(query, body, JSON.parse(redisRes.params));
       const data = JSON.parse(redisRes.mockRule);
       const res: any = mock(data);
       return res;
@@ -78,16 +77,16 @@ export class MockService {
       // 参数校验
       const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
       if (paramsCheckOn && findMockRuleList[0].params) {
-        this.validateParams(query, body, findMockRuleList[0].params);
+        this.validateParams(
+          query,
+          body,
+          JSON.parse(findMockRuleList[0].params),
+        );
       }
 
       const mockRule = findMockRuleList[0].mockRule;
       const firstParseData = JSON.parse(mockRule);
-      const parseMockRule =
-        typeof firstParseData === 'object'
-          ? firstParseData
-          : JSON.parse(firstParseData);
-      const res: any = mock(parseMockRule);
+      const res: any = mock(firstParseData);
 
       return res;
     } else {
@@ -141,16 +140,16 @@ export class MockService {
       const paramsCheckOn = findMockRuleList[0].paramsCheckOn;
       paramsCheckOn &&
         findMockRuleList[0].params &&
-        this.validateParams(query, null, findMockRuleList[0].params);
+        this.validateParams(
+          query,
+          null,
+          JSON.parse(findMockRuleList[0].params),
+        );
 
       // swagger导入的 不用解析两层
       const mockRule = findMockRuleList[0].mockRule;
       const firstParseData = JSON.parse(mockRule);
-      const parseMockRule =
-        typeof firstParseData === 'object'
-          ? firstParseData
-          : JSON.parse(firstParseData);
-      const res: any = mock(parseMockRule);
+      const res: any = mock(firstParseData);
 
       return res;
     } else {
@@ -184,7 +183,7 @@ export class MockService {
   // 传参校验
   validateParams(query, body, paramsJson) {
     const paramsError = [];
-    const paramsMap: ParamsMap = JSON.parse(paramsJson);
+    const paramsMap: ParamsMap = paramsJson;
 
     paramsMap.queryParams.length &&
       paramsMap.queryParams.forEach((item) => {
