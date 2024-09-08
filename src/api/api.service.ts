@@ -58,6 +58,7 @@ export class ApiService {
     const findApiByUrl = await this.apiRepository.findOneBy({
       url: apiDto.url,
       projectId: apiDto.projectId,
+      isDeleted: 0,
     });
 
     if (findApiByUrl) {
@@ -479,7 +480,10 @@ export class ApiService {
             mockRule: mockRule,
             method: method.toLocaleUpperCase(),
             delay: 0,
-            description: apiParseData.summary + '|' + apiParseData.description,
+            description:
+              apiParseData.summary + apiParseData.description
+                ? `|${apiParseData.description}`
+                : '',
             on: 1,
             paramsCheckOn: 0,
             params: apiParseData.params
