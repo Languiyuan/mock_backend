@@ -46,9 +46,9 @@ export class MockService {
         throw new HttpException('Error, 检查请求方法', HttpStatus.BAD_REQUEST);
       }
 
-      redisRes.paramsCheckOn &&
-        redisRes.params &&
+      if (redisRes.paramsCheckOn === '1' && redisRes.params) {
         this.validateParams(query, body, JSON.parse(redisRes.params));
+      }
       const data = JSON.parse(redisRes.mockRule);
       const res: any = mock(data);
       return res;
@@ -107,9 +107,9 @@ export class MockService {
         throw new HttpException('Error, 检查请求方法', HttpStatus.BAD_REQUEST);
       }
 
-      redisRes.paramsCheckOn &&
-        redisRes.params &&
+      if (redisRes.paramsCheckOn === '1' && redisRes.params) {
         this.validateParams(query, null, JSON.parse(redisRes.params));
+      }
       const data = JSON.parse(redisRes.mockRule);
       const res: any = mock(data);
       return res;
@@ -229,5 +229,10 @@ export class MockService {
     if (paramsError.length) {
       throw new HttpException(paramsError.join(';'), HttpStatus.BAD_REQUEST);
     }
+  }
+
+  // 延迟返回
+  async delay(s: number) {
+    return new Promise((resolve) => setTimeout(resolve, s * 1000));
   }
 }
