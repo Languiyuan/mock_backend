@@ -17,8 +17,6 @@ export class InvokeRecordInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
-    console.log('InvokeRecordInterceptor.name', InvokeRecordInterceptor.name);
-
     const request = context.switchToHttp().getRequest<Request>();
     const response = context.switchToHttp().getResponse<Response>();
 
@@ -27,7 +25,7 @@ export class InvokeRecordInterceptor implements NestInterceptor {
     const { ip, method, path } = request;
 
     this.logger.debug(
-      `${method} ${path} ${ip} ${userAgent}: ${context.getClass().name} ${
+      `${new Date()} ${method} ${path} ${ip} ${userAgent}: ${context.getClass().name} ${
         context.getHandler().name
       } invoked...`,
     );

@@ -18,6 +18,15 @@ import { Api } from './api/entities/Api.entity';
 import { UserProject } from './project/entities/UserProject.entity';
 import { ApiHistory } from './api/entities/ApiHistory.entity';
 import * as path from 'path';
+import {
+  WinstonModule,
+  utilities,
+  WinstonLogger,
+  WINSTON_MODULE_NEST_PROVIDER,
+} from 'nest-winston';
+import * as winston from 'winston';
+import { CustomTypeOrmLogger } from './CustomTypeOrmLogger';
+import 'winston-daily-rotate-file';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,7 +35,7 @@ import * as path from 'path';
       envFilePath: path.join(__dirname, '.env'),
     }),
     TypeOrmModule.forRootAsync({
-      useFactory(configService: ConfigService) {
+      useFactory(configService: ConfigService, logger: WinstonLogger) {
         return {
           type: 'mysql',
           host: configService.get('mysql_server_host'),
@@ -36,6 +45,7 @@ import * as path from 'path';
           database: configService.get('mysql_server_database'),
           synchronize: true,
           logging: true,
+          logger: new CustomTypeOrmLogger(logger),
           entities: [User, Project, Folder, Api, UserProject, ApiHistory],
           poolSize: 10,
           connectorPackage: 'mysql2',
@@ -45,7 +55,7 @@ import * as path from 'path';
           },
         };
       },
-      inject: [ConfigService],
+      inject: [ConfigService, WINSTON_MODULE_NEST_PROVIDER],
     }),
     JwtModule.registerAsync({
       global: true,
@@ -59,6 +69,35 @@ import * as path from 'path';
       },
       inject: [ConfigService],
     }),
+    WinstonModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        level: 'debug',
+        transports: [
+          // new winston.transports.File({
+          //   filename: `${process.cwd()}/log`,
+          // }),
+          new winston.transports.DailyRotateFile({
+            level: configService.get('winston_log_level'),
+            dirname: configService.get('winston_log_dirname'),
+            filename: configService.get('winston_log_filename'),
+            datePattern: configService.get('winston_log_date_pattern'),
+            maxSize: configService.get('winston_log_max_size'),
+            maxFiles: configService.get('winston_log_max_files'),
+            zippedArchive:
+              configService.get('winston_log_zipped_archive') === 'true',
+          }),
+
+          new winston.transports.Console({
+            format: winston.format.combine(
+              winston.format.timestamp(),
+              utilities.format.nestLike(),
+            ),
+          }),
+        ],
+      }),
+      inject: [ConfigService],
+    }),
+
     UserModule,
     RedisModule,
     MockModule,
