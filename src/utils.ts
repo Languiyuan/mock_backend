@@ -28,3 +28,7 @@ export function getType(variable) {
       return 'unknown';
   }
 }
+
+export function delay(s: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(() => resolve(), s * 1000));
+}

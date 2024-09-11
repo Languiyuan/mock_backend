@@ -12,7 +12,6 @@ import {
 import { MockService } from './mock.service';
 import { Request, Response } from 'express';
 import { NotFormatResponse } from 'src/custom.decorator';
-
 @Controller('mock')
 @NotFormatResponse()
 export class MockController {

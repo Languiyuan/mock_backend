@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { mock } from 'mockjs';
 import { Project } from 'src/project/entities/Project.entity';
 import { RedisService } from '../redis/redis.service';
-import { getType } from 'src/utils';
+import { getType, delay } from 'src/utils';
 
 interface Params {
   name: string;
@@ -24,6 +24,7 @@ interface ApiRedis {
   paramsCheckOn: number;
   params: string;
   method: string;
+  delay: number;
 }
 @Injectable()
 export class MockService {
@@ -51,13 +52,16 @@ export class MockService {
       }
       const data = JSON.parse(redisRes.mockRule);
       const res: any = mock(data);
+
+      Number(redisRes.delay) && (await delay(Number(redisRes.delay)));
+
       return res;
     }
 
     const apiUrl = await this.initMatch(projectSign, url);
 
     const findMockRuleList = await this.apiRepository.find({
-      select: ['mockRule', 'method', 'paramsCheckOn', 'params'],
+      select: ['mockRule', 'method', 'paramsCheckOn', 'params', 'delay'],
       where: { projectSign, url: apiUrl, isDeleted: 0, on: 1 },
     });
     if (findMockRuleList.length) {
@@ -71,6 +75,7 @@ export class MockService {
         paramsCheckOn: findMockRuleList[0].paramsCheckOn,
         params: findMockRuleList[0].params,
         method: findMockRuleList[0].method,
+        delay: findMockRuleList[0].delay,
       };
       await this.redisService.hSet(redisKey, dataToRedis, 1000 * 60 * 60 * 12);
 
@@ -87,6 +92,8 @@ export class MockService {
       const mockRule = findMockRuleList[0].mockRule;
       const firstParseData = JSON.parse(mockRule);
       const res: any = mock(firstParseData);
+
+      findMockRuleList[0].delay && (await delay(findMockRuleList[0].delay));
 
       return res;
     } else {
@@ -112,13 +119,16 @@ export class MockService {
       }
       const data = JSON.parse(redisRes.mockRule);
       const res: any = mock(data);
+
+      Number(redisRes.delay) && (await delay(Number(redisRes.delay)));
+
       return res;
     }
 
     const apiUrl = await this.initMatch(projectSign, url);
 
     const findMockRuleList = await this.apiRepository.find({
-      select: ['mockRule', 'method', 'paramsCheckOn', 'params'],
+      select: ['mockRule', 'method', 'paramsCheckOn', 'params', 'delay'],
       where: { projectSign, url: apiUrl, isDeleted: 0, on: 1 },
     });
 
@@ -133,6 +143,7 @@ export class MockService {
         paramsCheckOn: findMockRuleList[0].paramsCheckOn,
         params: findMockRuleList[0].params,
         method: findMockRuleList[0].method,
+        delay: findMockRuleList[0].delay,
       };
       await this.redisService.hSet(redisKey, dataToRedis, 1000 * 60 * 60 * 12);
 
@@ -150,6 +161,8 @@ export class MockService {
       const mockRule = findMockRuleList[0].mockRule;
       const firstParseData = JSON.parse(mockRule);
       const res: any = mock(firstParseData);
+
+      findMockRuleList[0].delay && (await delay(findMockRuleList[0].delay));
 
       return res;
     } else {
@@ -229,10 +242,5 @@ export class MockService {
     if (paramsError.length) {
       throw new HttpException(paramsError.join(';'), HttpStatus.BAD_REQUEST);
     }
-  }
-
-  // 延迟返回
-  async delay(s: number) {
-    return new Promise((resolve) => setTimeout(resolve, s * 1000));
   }
 }
