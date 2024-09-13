@@ -97,6 +97,7 @@ export class ApiService {
     const findApi = await this.apiRepository.findOneBy({
       projectId: apiDto.projectId,
       url: apiDto.url,
+      isDeleted: 0,
     });
     if (findApi) {
       const newApiHistory = new ApiHistory();
