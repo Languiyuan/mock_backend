@@ -442,7 +442,10 @@ export class ApiService {
     const folderList = await this.projectService.queryFolderList(projectId);
     // 添加api
     const resultVo = [];
-
+    // 获取project 信息
+    const findProject = await this.projectRepository.findOneBy({
+      id: projectId,
+    });
     const newApi = new ApiDto();
 
     const keys = specs?.paths ? Object.keys(specs.paths) : [];
@@ -477,7 +480,9 @@ export class ApiService {
             projectId: projectId,
             folderId: folderId,
             name: apiParseData.summary,
-            url: key,
+            url: key.startsWith(findProject.baseUrl)
+              ? key.substring(findProject.baseUrl.length)
+              : key,
             mockRule: mockRule,
             method: method.toLocaleUpperCase(),
             delay: 0,
