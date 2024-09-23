@@ -7,26 +7,9 @@ export function md5(str) {
 }
 
 export function getType(variable) {
-  const type = typeof variable;
-
-  switch (type) {
-    case 'undefined':
-    case 'boolean':
-    case 'number':
-    case 'string':
-    case 'function':
-      return type;
-    case 'object':
-      if (variable === null) {
-        return 'null';
-      } else if (Array.isArray(variable)) {
-        return 'array';
-      } else {
-        return 'object';
-      }
-    default:
-      return 'unknown';
-  }
+  if (variable === null) return 'null';
+  if (Array.isArray(variable)) return 'array';
+  return typeof variable;
 }
 
 export function delay(s: number): Promise<void> {
