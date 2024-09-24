@@ -35,6 +35,10 @@ export class RedisService {
     }
   }
 
+  async exist(key: string) {
+    return await this.redisClient.exists(key);
+  }
+
   // 新增哈希表操作
   async hSet(
     hashKey: string,

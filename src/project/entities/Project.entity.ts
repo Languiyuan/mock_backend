@@ -59,6 +59,14 @@ export class Project {
   })
   isDeleted: number;
 
+  @Column({
+    type: 'integer',
+    unsigned: true,
+    default: 0,
+    comment: '接口调用次数',
+  })
+  calledCount: number;
+
   @CreateDateColumn()
   createTime: Date;
 

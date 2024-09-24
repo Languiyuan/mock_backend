@@ -9,5 +9,6 @@ import { Project } from 'src/project/entities/Project.entity';
   imports: [TypeOrmModule.forFeature([Api, Project])],
   controllers: [MockController],
   providers: [MockService],
+  exports: [MockService],
 })
 export class MockModule {}

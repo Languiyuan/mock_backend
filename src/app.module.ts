@@ -26,6 +26,8 @@ import {
 } from 'nest-winston';
 import * as winston from 'winston';
 import { CustomTypeOrmLogger } from './CustomTypeOrmLogger';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TaskModule } from './task/task.module';
 import 'winston-daily-rotate-file';
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import 'winston-daily-rotate-file';
       // envFilePath: 'src/.env.development',
       envFilePath: path.join(__dirname, '.env'),
     }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useFactory(configService: ConfigService, logger: WinstonLogger) {
         return {
@@ -103,6 +106,7 @@ import 'winston-daily-rotate-file';
     MockModule,
     ProjectModule,
     ApiModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [

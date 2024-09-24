@@ -55,6 +55,9 @@ export class MockService {
 
       Number(redisRes.delay) && (await delay(Number(redisRes.delay)));
 
+      // 统计调用
+      this.countCallNum(projectSign);
+
       return res;
     }
 
@@ -95,6 +98,9 @@ export class MockService {
 
       findMockRuleList[0].delay && (await delay(findMockRuleList[0].delay));
 
+      // 统计调用
+      this.countCallNum(projectSign);
+
       return res;
     } else {
       throw new HttpException(
@@ -121,6 +127,9 @@ export class MockService {
       const res: any = mock(data);
 
       Number(redisRes.delay) && (await delay(Number(redisRes.delay)));
+
+      // 统计调用
+      this.countCallNum(projectSign);
 
       return res;
     }
@@ -163,6 +172,9 @@ export class MockService {
       const res: any = mock(firstParseData);
 
       findMockRuleList[0].delay && (await delay(findMockRuleList[0].delay));
+
+      // 统计调用
+      this.countCallNum(projectSign);
 
       return res;
     } else {
@@ -242,5 +254,31 @@ export class MockService {
     if (paramsError.length) {
       throw new HttpException(paramsError.join(';'), HttpStatus.BAD_REQUEST);
     }
+  }
+
+  // 统计调用次数
+  countCallNum(projectSign: string) {
+    const field = projectSign;
+    return this.redisService.hIncrBy('callCount', field, 1);
+  }
+
+  // 同步数据库
+  async flushRedisToDB() {
+    const calledStatObj = await this.redisService.hGetAll('callCount');
+    if (!calledStatObj) return;
+
+    for (const key in calledStatObj) {
+      const findProject = await this.projectRepository.findOneBy({
+        sign: key,
+        isDeleted: 0,
+      });
+
+      if (findProject) {
+        findProject.calledCount += Number(calledStatObj[key]);
+        await this.projectRepository.save(findProject);
+      }
+    }
+
+    await this.redisService.delete('callCount');
   }
 }
