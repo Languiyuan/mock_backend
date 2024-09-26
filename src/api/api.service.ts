@@ -249,7 +249,7 @@ export class ApiService {
         newApiHistory.apiId = findApi.id;
         newApiHistory.projectSign = findApi.projectSign;
         newApiHistory.projectId = apiDto.projectId;
-        newApiHistory.folderId = apiDto.folderId;
+        newApiHistory.folderId = findApi.folderId;
         newApiHistory.name = apiDto.name;
         newApiHistory.url = apiDto.url;
         newApiHistory.mockRule = apiDto.mockRule;
@@ -265,7 +265,7 @@ export class ApiService {
       }
 
       if (findApi) {
-        findApi.folderId = apiDto.folderId;
+        // findApi.folderId = apiDto.folderId;
         findApi.name = apiDto.name;
         findApi.url = apiDto.url;
         findApi.mockRule = apiDto.mockRule;
