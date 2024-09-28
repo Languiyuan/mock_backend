@@ -54,7 +54,7 @@ export class Api {
 
   @Column({
     type: 'text',
-    comment: '接口内容最长是10000',
+    comment: '接口内容最长是60000',
   })
   mockRule: string;
 
@@ -71,7 +71,7 @@ export class Api {
   delay: number;
 
   @Column({
-    length: 200,
+    length: 400,
     comment: '接口描述',
   })
   description: string;
