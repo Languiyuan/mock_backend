@@ -5,8 +5,7 @@ import { Repository } from 'typeorm';
 import { mock } from 'mockjs';
 import { Project } from 'src/project/entities/Project.entity';
 import { RedisService } from '../redis/redis.service';
-import { getType, delay } from 'src/utils';
-
+import { getType, delay, handleMockRuleFuncPart } from 'src/utils';
 interface Params {
   name: string;
   type: string;
@@ -50,7 +49,12 @@ export class MockService {
       if (redisRes.paramsCheckOn === '1' && redisRes.params) {
         this.validateParams(query, body, JSON.parse(redisRes.params));
       }
-      const data = JSON.parse(redisRes.mockRule);
+      // 函数替换返回
+      const mockRule = handleMockRuleFuncPart(redisRes.mockRule, {
+        options: { body, query, url },
+      });
+
+      const data = JSON.parse(mockRule);
       const res: any = mock(data);
 
       Number(redisRes.delay) && (await delay(Number(redisRes.delay)));
@@ -92,7 +96,11 @@ export class MockService {
         );
       }
 
-      const mockRule = findMockRuleList[0].mockRule;
+      // 函数替换返回
+      const mockRule = handleMockRuleFuncPart(findMockRuleList[0].mockRule, {
+        options: { body, query, url },
+      });
+
       const firstParseData = JSON.parse(mockRule);
       const res: any = mock(firstParseData);
 
@@ -123,7 +131,12 @@ export class MockService {
       if (redisRes.paramsCheckOn === '1' && redisRes.params) {
         this.validateParams(query, null, JSON.parse(redisRes.params));
       }
-      const data = JSON.parse(redisRes.mockRule);
+      // 函数替换返回
+      const mockRule = handleMockRuleFuncPart(redisRes.mockRule, {
+        options: { body: null, query, url },
+      });
+
+      const data = JSON.parse(mockRule);
       const res: any = mock(data);
 
       Number(redisRes.delay) && (await delay(Number(redisRes.delay)));
@@ -167,7 +180,11 @@ export class MockService {
         );
 
       // swagger导入的 不用解析两层
-      const mockRule = findMockRuleList[0].mockRule;
+      // const mockRule = findMockRuleList[0].mockRule;
+      // 函数替换返回
+      const mockRule = handleMockRuleFuncPart(findMockRuleList[0].mockRule, {
+        options: { body: null, query, url },
+      });
       const firstParseData = JSON.parse(mockRule);
       const res: any = mock(firstParseData);
 
