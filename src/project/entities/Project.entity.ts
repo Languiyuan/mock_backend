@@ -67,6 +67,25 @@ export class Project {
   })
   calledCount: number;
 
+  @Column({
+    comment: '是否开启代理',
+    default: 0,
+  })
+  isProxy: number;
+
+  @Column({
+    comment: '是否开启全局代理',
+    default: 0,
+  })
+  isAllProxy: number;
+
+  @Column({
+    length: 2000,
+    comment: '代理请求头',
+    default: '',
+  })
+  proxyHeaders: string;
+
   @CreateDateColumn()
   createTime: Date;
 

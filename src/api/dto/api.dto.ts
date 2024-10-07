@@ -57,4 +57,7 @@ export class ApiDto {
 
   @IsString()
   params: string;
+
+  @IsIn([0, 1], { message: '是否开启接口代理' })
+  isProxy: number;
 }

@@ -88,6 +88,7 @@ export class ApiService {
     newApi.on = apiDto.on;
     newApi.paramsCheckOn = apiDto.paramsCheckOn;
     newApi.params = apiDto.params;
+    newApi.isProxy = apiDto.isProxy;
     newApi.createUserId = userId;
     newApi.updateUserId = userId;
 
@@ -115,6 +116,7 @@ export class ApiService {
       newApiHistory.on = apiDto.on;
       newApiHistory.paramsCheckOn = apiDto.paramsCheckOn;
       newApiHistory.params = apiDto.params;
+      newApiHistory.isProxy = apiDto.isProxy;
       newApiHistory.createUserId = userId;
       newApiHistory.updateUserId = userId;
       await this.apiHistoryRepository.save(newApiHistory);
@@ -158,6 +160,7 @@ export class ApiService {
     }
   }
 
+  // 批量删除
   async batchRemoveApi(userId: number, ids: number[], projectId: number) {
     // 判断用户是否有权限 是否是项目成员
     const findMember = await this.userProjectRepository.findOneBy({
@@ -259,6 +262,7 @@ export class ApiService {
         newApiHistory.on = apiDto.on;
         newApiHistory.paramsCheckOn = apiDto.paramsCheckOn;
         newApiHistory.params = apiDto.params;
+        newApiHistory.isProxy = apiDto.isProxy;
         newApiHistory.createUserId = userId;
         newApiHistory.updateUserId = userId;
         await this.apiHistoryRepository.save(newApiHistory);
@@ -276,6 +280,7 @@ export class ApiService {
         findApi.paramsCheckOn = apiDto.paramsCheckOn;
         findApi.params = apiDto.params;
         findApi.updateUserId = userId;
+        findApi.isProxy = apiDto.isProxy;
 
         await this.apiRepository.save(findApi);
 

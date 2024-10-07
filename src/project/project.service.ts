@@ -141,9 +141,19 @@ export class ProjectService {
     findProject.name = editProjectDto.name;
     findProject.description = editProjectDto.description;
     findProject.updateUserId = userId;
-    if (editProjectDto.apiExportTemplate) {
-      findProject.apiExportTemplate = editProjectDto.apiExportTemplate;
-    }
+
+    const fieldsToUpdate = [
+      'apiExportTemplate',
+      'isProxy',
+      'isAllProxy',
+      'proxyHeaders',
+    ];
+
+    fieldsToUpdate.forEach((field) => {
+      if (editProjectDto.hasOwnProperty(field)) {
+        findProject[field] = editProjectDto[field];
+      }
+    });
 
     try {
       await this.projectRepository.save(findProject);

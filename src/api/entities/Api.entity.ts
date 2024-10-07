@@ -100,6 +100,12 @@ export class Api {
   })
   isDeleted: number;
 
+  @Column({
+    comment: '是否开启该接口代理',
+    default: 0,
+  })
+  isProxy: number;
+
   @CreateDateColumn()
   createTime: Date;
 
