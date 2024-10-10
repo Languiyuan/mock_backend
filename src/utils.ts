@@ -43,6 +43,8 @@ function extractLMFunc(mockRule) {
 
   return results;
 }
+
+// 处理mockRule函数部分
 export function handleMockRuleFuncPart(mockRule: string, sandbox) {
   const results = extractLMFunc(mockRule); // 提取 @LMFunc() 调用
   if (results.length === 0) return mockRule;
@@ -58,12 +60,27 @@ export function handleMockRuleFuncPart(mockRule: string, sandbox) {
   results.forEach((funcCall) => {
     let returnValue; // 处理函数调用
     try {
-      const code = '(function() {' + funcCall.slice(9, -1).trim() + '})()'; // 获取代码内容
-      returnValue = vm.run(code);
+      let code = `
+      (function() {
+      `;
+      funcCall
+        .slice(8, -1)
+        .trim()
+        .split('\\n')
+        .forEach((item) => {
+          code += `
+        ${item.trim()}
 
+        `;
+        });
+      code += `
+       })()
+      `;
+
+      returnValue = vm.run(code);
       returnValue = JSON.stringify(returnValue);
     } catch (error) {
-      returnValue = `LMFunc execution error: ${error.message}`; // 或者根据需要返回其他值
+      returnValue = `"LMFunc execution error"`; // 或者根据需要返回其他值
     }
 
     const regex = new RegExp(
