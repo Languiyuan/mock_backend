@@ -142,12 +142,7 @@ export class ProjectService {
     findProject.description = editProjectDto.description;
     findProject.updateUserId = userId;
 
-    const fieldsToUpdate = [
-      'apiExportTemplate',
-      'isProxy',
-      'isAllProxy',
-      'proxyHeaders',
-    ];
+    const fieldsToUpdate = ['apiExportTemplate', 'proxyInfo'];
 
     fieldsToUpdate.forEach((field) => {
       if (editProjectDto.hasOwnProperty(field)) {
