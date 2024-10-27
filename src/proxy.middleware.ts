@@ -18,8 +18,6 @@ interface ProxyInfo {
 
 @Injectable()
 export class ProxyMiddleware implements NestMiddleware {
-  private targetUrl = 'http://localhost:4000'; // 目标服务器地址
-
   @Inject(ProjectService)
   private projectService: ProjectService;
 
@@ -32,7 +30,7 @@ export class ProxyMiddleware implements NestMiddleware {
         const proxyInfo = await this.getProxyInfo(req);
 
         const proxyMiddleware = createProxyMiddleware({
-          target: this.targetUrl,
+          target: proxyInfo.targetUrl,
           changeOrigin: true,
           pathRewrite: function (path) {
             const pathList = path.split('/');
@@ -67,7 +65,7 @@ export class ProxyMiddleware implements NestMiddleware {
         throw new HttpException('Proxy Error，请检查代理配置', 500);
       }
     } else {
-      next(); // 如果不需要代理，则继续执行下一个中间件或路由处理器
+      next();
     }
   }
 
@@ -76,7 +74,7 @@ export class ProxyMiddleware implements NestMiddleware {
   }
 
   // 获取项目代理信息"
-  async getProxyInfo(req: Request): Promise<ProxyInfo> {
+  private async getProxyInfo(req: Request): Promise<ProxyInfo> {
     const proxyInfo: ProxyInfo = {
       targetUrl: '',
       projectSign: '',
@@ -84,29 +82,40 @@ export class ProxyMiddleware implements NestMiddleware {
     };
 
     proxyInfo.projectSign = req.originalUrl.split('/')[4];
-
+    // 验证projectSign的格式来增强安全性。
+    if (!/^[a-zA-Z0-9_-]+$/.test(proxyInfo.projectSign)) {
+      throw new Error('Invalid project sign format');
+    }
     const redisKey = `project:${proxyInfo.projectSign}`;
 
     const redisRes = await this.redisService.hGetAll(redisKey);
 
     if (redisRes?.targetUrl) {
-      proxyInfo.targetUrl = redisRes.targetUrl;
-      proxyInfo.headers = JSON.parse(redisRes.headers);
+      try {
+        proxyInfo.targetUrl = redisRes.targetUrl;
+        proxyInfo.headers = JSON.parse(redisRes.headers);
+      } catch (error) {
+        throw new Error('Failed to parse Redis response');
+      }
     } else {
       const projectInfo = await this.projectService.getDetailBySign(
         proxyInfo.projectSign,
       );
-      const { targetUrl, headers } = JSON.parse(projectInfo.proxyInfo);
-      proxyInfo.targetUrl = targetUrl;
-      proxyInfo.headers = headers;
-      proxyInfo.projectSign = projectInfo.sign;
+      try {
+        const { targetUrl, headers } = JSON.parse(projectInfo.proxyInfo);
+        proxyInfo.targetUrl = targetUrl;
+        proxyInfo.headers = headers;
+        proxyInfo.projectSign = projectInfo.sign;
 
-      const proxyRedis = {
-        ...proxyInfo,
-        headers: JSON.stringify(headers),
-      };
+        const proxyRedis = {
+          ...proxyInfo,
+          headers: JSON.stringify(headers),
+        };
 
-      await this.redisService.hSet(redisKey, proxyRedis, 1000 * 60 * 60 * 12);
+        await this.redisService.hSet(redisKey, proxyRedis, 1000 * 60 * 60 * 12);
+      } catch (error) {
+        throw new Error('Failed to parse project info');
+      }
     }
 
     return proxyInfo;
