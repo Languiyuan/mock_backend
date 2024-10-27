@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,6 +17,7 @@ import { ApiModule } from './api/api.module';
 import { Api } from './api/entities/Api.entity';
 import { UserProject } from './project/entities/UserProject.entity';
 import { ApiHistory } from './api/entities/ApiHistory.entity';
+import { ProxyMiddleware } from './proxy.middleware';
 import * as path from 'path';
 import {
   WinstonModule,
@@ -117,4 +118,8 @@ import 'winston-daily-rotate-file';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ProxyMiddleware).forRoutes('/mock'); // 指定需要应用此中间件的路由
+  }
+}

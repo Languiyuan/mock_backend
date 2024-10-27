@@ -51,6 +51,7 @@ export class ProjectService {
     newProject.createUserId = userId;
     newProject.sign = generateRandomString(20);
     newProject.updateUserId = userId;
+    newProject.proxyInfo = '';
     newProject.apiExportTemplate =
       '// lmDescription \n export const lmFuncName = (params) => {\n    return http.lmMethod("lmBaseUrl" + "lmUrl", params)\n}';
     try {
@@ -210,6 +211,21 @@ export class ProjectService {
         createUsername: findUser.username,
         members: members,
       };
+    } else {
+      throw new HttpException('项目不存在', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // 获取项目详情 通过 sign
+  async getDetailBySign(projectSign: string) {
+    // 查找数据
+    const findProject = await this.projectRepository.findOneBy({
+      sign: projectSign,
+    });
+
+    // 判断项目未被删除
+    if (findProject && findProject.isDeleted === 0) {
+      return findProject;
     } else {
       throw new HttpException('项目不存在', HttpStatus.BAD_REQUEST);
     }
@@ -520,5 +536,35 @@ export class ProjectService {
     });
 
     return findFolderList;
+  }
+
+  // 代理配置
+  async proxyConfig(userId: number, projectId: number, proxyInfo: string) {
+    // 判断用户是否有权限 是否是项目成员
+    const findMember = await this.userProjectRepository.findOneBy({
+      userId,
+      projectId,
+    });
+
+    if (findMember) {
+      const findProject = await this.projectRepository.findOneBy({
+        id: projectId,
+      });
+
+      findProject.proxyInfo = proxyInfo;
+
+      const redisKey = `project:${findProject.sign}`;
+      // 从redis中删除 不存在也不会报错
+      await this.redisService.delete(redisKey);
+
+      await this.projectRepository.save(findProject);
+
+      return '配置成功';
+    } else {
+      throw new HttpException(
+        '项目不存在或无权限操作。',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
