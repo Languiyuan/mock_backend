@@ -132,4 +132,15 @@ export class ProjectController {
   async queryFolderList(@Body('projectId') projectId: number) {
     return await this.projectService.queryFolderList(projectId);
   }
+
+  // 项目代理配置
+  @Post('proxyConfig')
+  @RequireLogin()
+  async proxyConfig(
+    @UserInfo('userId') userId: number,
+    @Body('projectId') projectId: number,
+    @Body('proxyInfo') proxyInfo: string,
+  ) {
+    return await this.projectService.proxyConfig(userId, projectId, proxyInfo);
+  }
 }

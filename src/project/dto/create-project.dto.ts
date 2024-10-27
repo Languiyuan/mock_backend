@@ -34,4 +34,11 @@ export class EditProjectDto extends CreateProjectDto {
     message: 'API导出模板长度不能超过1000个字符',
   })
   apiExportTemplate?: string; // 可选属性，可以是 string 或 null
+
+  @IsOptional()
+  @IsString({
+    message: 'API导出模板必须是字符串',
+  })
+  @MaxLength(10000, { message: '返回设置不能超过10000个字符' })
+  proxyInfo: string;
 }

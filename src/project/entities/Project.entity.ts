@@ -67,6 +67,12 @@ export class Project {
   })
   calledCount: number;
 
+  @Column({
+    type: 'text',
+    comment: '代理请求头',
+  })
+  proxyInfo: string;
+
   @CreateDateColumn()
   createTime: Date;
 

@@ -158,6 +158,7 @@ export class ApiService {
     }
   }
 
+  // 批量删除
   async batchRemoveApi(userId: number, ids: number[], projectId: number) {
     // 判断用户是否有权限 是否是项目成员
     const findMember = await this.userProjectRepository.findOneBy({
