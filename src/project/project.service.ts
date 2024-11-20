@@ -72,7 +72,7 @@ export class ProjectService {
       newUserProject.userId = userId;
       newUserProject.projectId = projectId;
       newUserProject.isCreateUser = 1;
-      this.userProjectRepository.save(newUserProject);
+      await this.userProjectRepository.save(newUserProject);
 
       return '创建成功';
     } catch (error) {
@@ -366,7 +366,7 @@ export class ProjectService {
       if (findUserProject) {
         if (findUserProject.isDeleted) {
           findUserProject.isDeleted = 0;
-          this.userProjectRepository.save(findUserProject);
+          await this.userProjectRepository.save(findUserProject);
           return '添加成功';
         } else {
           return '该成员已在项目组中';
@@ -376,7 +376,7 @@ export class ProjectService {
         newUserProject.projectId = projectId;
         newUserProject.userId = memberId;
         newUserProject.isCreateUser = 0;
-        this.userProjectRepository.save(newUserProject);
+        await this.userProjectRepository.save(newUserProject);
         return '添加成功';
       }
     } catch (error) {
