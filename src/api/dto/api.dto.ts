@@ -58,3 +58,7 @@ export class ApiDto {
   @IsString()
   params: string;
 }
+
+export class ApiExportDto extends ApiDto {
+  folderName: string | null;
+}

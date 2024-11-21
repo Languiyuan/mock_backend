@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
-import { ApiDto } from './dto/api.dto';
+import { ApiDto, ApiExportDto } from './dto/api.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Api } from './entities/Api.entity';
 import { Like, Repository } from 'typeorm';
@@ -373,9 +373,16 @@ export class ApiService {
     const findApiList = await this.apiRepository.find({
       where: { projectId, isDeleted: 0 },
     });
-    const list = findApiList.map((item) => {
+
+    const folderList = await this.projectService.queryFolderList(projectId);
+
+    const list: ApiExportDto[] = findApiList.map((item) => {
+      const folderName =
+        folderList.find((folder) => folder.id === item.folderId)?.name || null;
+
       return {
         ...item,
+        folderName: folderName,
         createUserId: null,
         updateUserId: null,
         folderId: null,
@@ -389,12 +396,35 @@ export class ApiService {
   async uploadProjectFile(
     userId: number,
     projectId: number,
-    fileData: ApiDto[],
+    fileData: ApiExportDto[],
   ) {
     const resultVo = [];
+
+    // 生成项目目录
+    try {
+      if (fileData.length) {
+        for (const dto of fileData) {
+          dto.folderName &&
+            (await this.projectService.addFolder(userId, {
+              folderName: dto.folderName,
+              projectId: projectId,
+            }));
+        }
+      }
+    } catch (e) {}
+
+    const folderList = await this.projectService.queryFolderList(projectId);
+
     for (const dto of fileData) {
       const apiDto: ApiDto = Object.assign(new ApiDto(), dto); // 使用Object.assign进行对象属性拷贝
       apiDto.projectId = projectId;
+
+      let folderId: null | number = null;
+
+      const folder = folderList.find((item) => item.name === dto.folderName);
+      folderId = folder?.id || null;
+
+      apiDto.folderId = folderId;
       try {
         const errors = await validate(apiDto);
         if (errors.length > 0) {
