@@ -453,6 +453,7 @@ export class ApiService {
     path: string,
     userId: number,
     projectId: number,
+    useRealData: 'real' | 'mock', // 1 use | 2 not
   ) {
     const specs = await swaggerParseMock(
       `${this.configService.get('nest_server_origin')}:${this.configService.get('nest_server_port')}/lanMock/api/getUploadsFile?path=${path}`,
@@ -479,6 +480,18 @@ export class ApiService {
     });
     const newApi = new ApiDto();
 
+    // 从数据中获取mockRule的通用函数
+    const getMockRule = (response: any, useRealData: 'real' | 'mock') => {
+      if (!response) return '';
+      const example = response?.content?.['application/json']?.example;
+
+      if (useRealData === 'real' && example !== undefined) {
+        return JSON.stringify(example, null, 0);
+      } else {
+        return response.example || '';
+      }
+    };
+
     const keys = specs?.paths ? Object.keys(specs.paths) : [];
     if (keys.length) {
       for (const key of keys) {
@@ -502,8 +515,15 @@ export class ApiService {
           }
 
           let mockRule: string = '';
+          //  200 OK :这是最常见的成功状态码，表示请求已成功处理，且响应体中包含请求的数据。
+          // 201 Created :表示请求成功并且服务器创建了一个新的资源。通常用于 POST 请求，响应中通常会包含新资源的 URI。
+          // 304 Not Modified :表示请求成功，但服务器没有返回任何新的数据，通常用于缓存。 用于GET 请求
           if (apiParseData.responses['200']) {
-            mockRule = apiParseData.responses['200'].example || '';
+            mockRule = getMockRule(apiParseData.responses['200'], useRealData);
+          } else if (apiParseData.responses['201']) {
+            mockRule = getMockRule(apiParseData.responses['201'], useRealData);
+          } else if (method === 'get' && apiParseData.responses['304']) {
+            mockRule = getMockRule(apiParseData.responses['304'], useRealData);
           }
 
           const dto = {

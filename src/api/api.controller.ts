@@ -150,6 +150,7 @@ export class ApiController {
     @UserInfo('userId') userId: number,
     @Body('projectId') projectId: number,
     @Body('type') type: string,
+    @Body('useRealData') useRealData: 'real' | 'mock', // 1: use 2: not use
   ) {
     // 读取文件内容
     const resultVo = await fs
@@ -159,11 +160,11 @@ export class ApiController {
         try {
           // swagger json import
           if (type === 'swaggerJson') {
-            console.log(file.path);
             const res = await this.apiService.uploadProjectBySwagger(
               file.path,
               userId,
               projectId,
+              useRealData || 'mock',
             );
 
             return res;
@@ -179,6 +180,15 @@ export class ApiController {
             );
 
             return res;
+          }
+
+          if (type === 'har') {
+            // const jsonData = JSON.parse(data);
+            // const res = await this.apiService.uploadHarFile(
+            //   userId,
+            //   projectId,
+            //   jsonData,
+            // );
           }
         } catch (error) {
           console.error('解析 JSON 时发生错误:', error);

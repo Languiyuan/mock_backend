@@ -1,0 +1,1305 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+      "title": "HarToOpenApi",
+      "version": "1.0.0",
+      "description": "OpenAPI spec generated from HAR data for localhost on 2024-11-24T07:40:26.641Z"
+  },
+  "paths": {
+      "/lanMock/api/query": {
+          "parameters": [],
+          "post": {
+              "description": "",
+              "operationId": "postLanMockApiQuery",
+              "parameters": [],
+              "requestBody": {
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "folderId": 0,
+                              "name": "",
+                              "pageNo": 1,
+                              "pageSize": 20,
+                              "projectId": 1,
+                              "url": ""
+                          },
+                          "schema": {
+                              "additionalProperties": false,
+                              "properties": {
+                                  "folderId": {
+                                      "type": "integer"
+                                  },
+                                  "name": {
+                                      "type": "string"
+                                  },
+                                  "pageNo": {
+                                      "type": "integer"
+                                  },
+                                  "pageSize": {
+                                      "type": "integer"
+                                  },
+                                  "projectId": {
+                                      "type": "integer"
+                                  },
+                                  "url": {
+                                      "type": "string"
+                                  }
+                              },
+                              "required": [],
+                              "title": "LANMockAPIQueryPostRequest",
+                              "type": "object"
+                          }
+                      }
+                  },
+                  "required": true
+              },
+              "responses": {
+                  "201": {
+                      "content": {
+                          "application/json": {
+                              "example": {
+                                  "code": 200,
+                                  "data": {
+                                      "list": [
+                                          {
+                                              "createTime": "2024-10-06T08:13:37.122Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 4,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( const name = '123123'; return name + 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-07T04:43:02.000Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "createTime": "2024-10-03T17:11:49.862Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 3,
+                                              "isDeleted": 0,
+                                              "method": "POST",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( return 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTest",
+                                              "on": 1,
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-03T17:30:15.000Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTest"
+                                          }
+                                      ],
+                                      "pageNo": 1,
+                                      "pageSize": 20,
+                                      "total": 2
+                                  },
+                                  "message": "success"
+                              },
+                              "schema": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                      "code": {
+                                          "type": "integer"
+                                      },
+                                      "data": {
+                                          "additionalProperties": false,
+                                          "properties": {
+                                              "list": {
+                                                  "items": {
+                                                      "additionalProperties": false,
+                                                      "properties": {
+                                                          "createTime": {
+                                                              "format": "date-time",
+                                                              "type": "string"
+                                                          },
+                                                          "createUserId": {
+                                                              "type": "integer"
+                                                          },
+                                                          "delay": {
+                                                              "type": "integer"
+                                                          },
+                                                          "description": {
+                                                              "type": "string"
+                                                          },
+                                                          "folderId": {
+                                                              "nullable": true
+                                                          },
+                                                          "id": {
+                                                              "type": "integer"
+                                                          },
+                                                          "isDeleted": {
+                                                              "type": "integer"
+                                                          },
+                                                          "method": {
+                                                              "type": "string"
+                                                          },
+                                                          "mockRule": {
+                                                              "type": "string"
+                                                          },
+                                                          "name": {
+                                                              "type": "string"
+                                                          },
+                                                          "on": {
+                                                              "type": "integer"
+                                                          },
+                                                          "params": {
+                                                              "type": "string"
+                                                          },
+                                                          "paramsCheckOn": {
+                                                              "type": "integer"
+                                                          },
+                                                          "projectId": {
+                                                              "type": "integer"
+                                                          },
+                                                          "projectSign": {
+                                                              "type": "string"
+                                                          },
+                                                          "updateTime": {
+                                                              "format": "date-time",
+                                                              "type": "string"
+                                                          },
+                                                          "updateUserId": {
+                                                              "type": "integer"
+                                                          },
+                                                          "url": {
+                                                              "type": "string"
+                                                          }
+                                                      },
+                                                      "required": [],
+                                                      "title": "List",
+                                                      "type": "object"
+                                                  },
+                                                  "type": "array"
+                                              },
+                                              "pageNo": {
+                                                  "type": "integer"
+                                              },
+                                              "pageSize": {
+                                                  "type": "integer"
+                                              },
+                                              "total": {
+                                                  "type": "integer"
+                                              }
+                                          },
+                                          "required": [],
+                                          "title": "Data",
+                                          "type": "object"
+                                      },
+                                      "message": {
+                                          "type": "string"
+                                      }
+                                  },
+                                  "required": [],
+                                  "title": "LANMockAPIQueryPostRequest",
+                                  "type": "object"
+                              }
+                          }
+                      },
+                      "description": ""
+                  }
+              },
+              "summary": "Post Lan Mock Api Query"
+          }
+      },
+      "/lanMock/api/queryApiDetail": {
+          "parameters": [],
+          "post": {
+              "description": "",
+              "operationId": "postLanMockApiQueryApiDetail",
+              "parameters": [],
+              "requestBody": {
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "id": 4
+                          },
+                          "schema": {
+                              "additionalProperties": false,
+                              "properties": {
+                                  "id": {
+                                      "type": "integer"
+                                  }
+                              },
+                              "required": [],
+                              "title": "LANMockAPIQueryAPIDetailPostRequest",
+                              "type": "object"
+                          }
+                      }
+                  },
+                  "required": true
+              },
+              "responses": {
+                  "201": {
+                      "content": {
+                          "application/json": {
+                              "example": {
+                                  "code": 200,
+                                  "data": {
+                                      "createTime": "2024-10-06T08:13:37.122Z",
+                                      "createUserId": 1,
+                                      "delay": 0,
+                                      "description": "",
+                                      "folderId": null,
+                                      "id": 4,
+                                      "isDeleted": 0,
+                                      "method": "GET",
+                                      "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( const name = '123123'; return name + 'ykykyk')\",\"msg\":\"success\"}",
+                                      "name": "/funcTestGet",
+                                      "on": 1,
+                                      "params": "",
+                                      "paramsCheckOn": 0,
+                                      "projectId": 1,
+                                      "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                      "updateTime": "2024-10-07T04:43:02.000Z",
+                                      "updateUserId": 1,
+                                      "url": "/funcTestGet"
+                                  },
+                                  "message": "success"
+                              },
+                              "schema": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                      "code": {
+                                          "type": "integer"
+                                      },
+                                      "data": {
+                                          "additionalProperties": false,
+                                          "properties": {
+                                              "createTime": {
+                                                  "format": "date-time",
+                                                  "type": "string"
+                                              },
+                                              "createUserId": {
+                                                  "type": "integer"
+                                              },
+                                              "delay": {
+                                                  "type": "integer"
+                                              },
+                                              "description": {
+                                                  "type": "string"
+                                              },
+                                              "folderId": {
+                                                  "nullable": true
+                                              },
+                                              "id": {
+                                                  "type": "integer"
+                                              },
+                                              "isDeleted": {
+                                                  "type": "integer"
+                                              },
+                                              "method": {
+                                                  "type": "string"
+                                              },
+                                              "mockRule": {
+                                                  "type": "string"
+                                              },
+                                              "name": {
+                                                  "type": "string"
+                                              },
+                                              "on": {
+                                                  "type": "integer"
+                                              },
+                                              "params": {
+                                                  "type": "string"
+                                              },
+                                              "paramsCheckOn": {
+                                                  "type": "integer"
+                                              },
+                                              "projectId": {
+                                                  "type": "integer"
+                                              },
+                                              "projectSign": {
+                                                  "type": "string"
+                                              },
+                                              "updateTime": {
+                                                  "format": "date-time",
+                                                  "type": "string"
+                                              },
+                                              "updateUserId": {
+                                                  "type": "integer"
+                                              },
+                                              "url": {
+                                                  "type": "string"
+                                              }
+                                          },
+                                          "required": [],
+                                          "title": "Data",
+                                          "type": "object"
+                                      },
+                                      "message": {
+                                          "type": "string"
+                                      }
+                                  },
+                                  "required": [],
+                                  "title": "LANMockAPIQueryAPIDetailPostRequest",
+                                  "type": "object"
+                              }
+                          }
+                      },
+                      "description": ""
+                  }
+              },
+              "summary": "Post Lan Mock Api Query Api Detail"
+          }
+      },
+      "/lanMock/api/queryHistory": {
+          "parameters": [],
+          "post": {
+              "description": "",
+              "operationId": "postLanMockApiQueryHistory",
+              "parameters": [],
+              "requestBody": {
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "apiId": 4,
+                              "pageNo": 1,
+                              "pageSize": 20
+                          },
+                          "schema": {
+                              "additionalProperties": false,
+                              "properties": {
+                                  "apiId": {
+                                      "type": "integer"
+                                  },
+                                  "pageNo": {
+                                      "type": "integer"
+                                  },
+                                  "pageSize": {
+                                      "type": "integer"
+                                  }
+                              },
+                              "required": [],
+                              "title": "LANMockAPIQueryHistoryPostRequest",
+                              "type": "object"
+                          }
+                      }
+                  },
+                  "required": true
+              },
+              "responses": {
+                  "201": {
+                      "content": {
+                          "application/json": {
+                              "example": {
+                                  "code": 200,
+                                  "data": {
+                                      "list": [
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-07T04:43:02.483Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 14,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( const name = '123123'; return name + 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "修改",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-07T04:43:02.483Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-07T04:42:34.432Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 13,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( const name = '123123' /n return name + 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "修改",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-07T04:42:34.432Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-06T15:24:21.954Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 12,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( const name = '123123'; return name + 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "修改",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-06T15:24:21.954Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-06T15:24:07.492Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 11,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( const name = 'ykky'; return name + 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "修改",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-06T15:24:07.492Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-06T13:21:00.839Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 10,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( return 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "修改",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-06T13:21:00.839Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-06T13:11:53.050Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 9,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "\"@LMFunc( return options;)\"",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "修改",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-06T13:11:53.050Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-06T12:46:21.523Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 8,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( return 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "修改",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-06T12:46:21.523Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-06T12:41:47.196Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 7,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( // 注释; return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( return 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "修改",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-06T12:41:47.196Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-06T08:13:54.305Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 6,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":\"@LMFunc( return options;)\",\"data1\":\"@LMFunc( return 1)\",\"data2\":\"@LMFunc( return '1')\",\"data3\":\"@LMFunc( return 'ykykyk')\",\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "修改",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-06T08:13:54.305Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          },
+                                          {
+                                              "apiId": 4,
+                                              "createTime": "2024-10-06T08:13:37.157Z",
+                                              "createUserId": 1,
+                                              "delay": 0,
+                                              "description": "",
+                                              "folderId": null,
+                                              "id": 5,
+                                              "isDeleted": 0,
+                                              "method": "GET",
+                                              "mockRule": "{\"code\":\"0\",\"data\":{},\"msg\":\"success\"}",
+                                              "name": "/funcTestGet",
+                                              "on": 1,
+                                              "operateType": "新增",
+                                              "params": "",
+                                              "paramsCheckOn": 0,
+                                              "projectId": 1,
+                                              "projectSign": "Ccg3hXAjnh8UTkJImEow",
+                                              "updateTime": "2024-10-06T08:13:37.157Z",
+                                              "updateUserId": 1,
+                                              "url": "/funcTestGet"
+                                          }
+                                      ],
+                                      "pageNo": 1,
+                                      "pageSize": 20,
+                                      "total": 10
+                                  },
+                                  "message": "success"
+                              },
+                              "schema": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                      "code": {
+                                          "type": "integer"
+                                      },
+                                      "data": {
+                                          "additionalProperties": false,
+                                          "properties": {
+                                              "list": {
+                                                  "items": {
+                                                      "additionalProperties": false,
+                                                      "properties": {
+                                                          "apiId": {
+                                                              "type": "integer"
+                                                          },
+                                                          "createTime": {
+                                                              "format": "date-time",
+                                                              "type": "string"
+                                                          },
+                                                          "createUserId": {
+                                                              "type": "integer"
+                                                          },
+                                                          "delay": {
+                                                              "type": "integer"
+                                                          },
+                                                          "description": {
+                                                              "type": "string"
+                                                          },
+                                                          "folderId": {
+                                                              "nullable": true
+                                                          },
+                                                          "id": {
+                                                              "type": "integer"
+                                                          },
+                                                          "isDeleted": {
+                                                              "type": "integer"
+                                                          },
+                                                          "method": {
+                                                              "enum": [
+                                                                  "GET"
+                                                              ],
+                                                              "title": "Method",
+                                                              "type": "string"
+                                                          },
+                                                          "mockRule": {
+                                                              "type": "string"
+                                                          },
+                                                          "name": {
+                                                              "enum": [
+                                                                  "/funcTestGet"
+                                                              ],
+                                                              "title": "Name",
+                                                              "type": "string"
+                                                          },
+                                                          "on": {
+                                                              "type": "integer"
+                                                          },
+                                                          "operateType": {
+                                                              "enum": [
+                                                                  "修改",
+                                                                  "新增"
+                                                              ],
+                                                              "title": "OperateType",
+                                                              "type": "string"
+                                                          },
+                                                          "params": {
+                                                              "type": "string"
+                                                          },
+                                                          "paramsCheckOn": {
+                                                              "type": "integer"
+                                                          },
+                                                          "projectId": {
+                                                              "type": "integer"
+                                                          },
+                                                          "projectSign": {
+                                                              "enum": [
+                                                                  "Ccg3hXAjnh8UTkJImEow"
+                                                              ],
+                                                              "title": "ProjectSign",
+                                                              "type": "string"
+                                                          },
+                                                          "updateTime": {
+                                                              "format": "date-time",
+                                                              "type": "string"
+                                                          },
+                                                          "updateUserId": {
+                                                              "type": "integer"
+                                                          },
+                                                          "url": {
+                                                              "enum": [
+                                                                  "/funcTestGet"
+                                                              ],
+                                                              "title": "Name",
+                                                              "type": "string"
+                                                          }
+                                                      },
+                                                      "required": [],
+                                                      "title": "List",
+                                                      "type": "object"
+                                                  },
+                                                  "type": "array"
+                                              },
+                                              "pageNo": {
+                                                  "type": "integer"
+                                              },
+                                              "pageSize": {
+                                                  "type": "integer"
+                                              },
+                                              "total": {
+                                                  "type": "integer"
+                                              }
+                                          },
+                                          "required": [],
+                                          "title": "Data",
+                                          "type": "object"
+                                      },
+                                      "message": {
+                                          "type": "string"
+                                      }
+                                  },
+                                  "required": [],
+                                  "title": "LANMockAPIQueryHistoryPostRequest",
+                                  "type": "object"
+                              }
+                          }
+                      },
+                      "description": ""
+                  }
+              },
+              "summary": "Post Lan Mock Api Query History"
+          }
+      },
+      "/lanMock/project/detail": {
+          "get": {
+              "description": "",
+              "operationId": "getLanMockProjectDetail",
+              "parameters": [
+                  {
+                      "description": "projectId",
+                      "in": "query",
+                      "name": "projectId",
+                      "schema": {
+                          "default": "1",
+                          "example": "1",
+                          "type": "string"
+                      }
+                  }
+              ],
+              "responses": {
+                  "200": {
+                      "content": {
+                          "application/json": {
+                              "example": {
+                                  "code": 200,
+                                  "data": {
+                                      "apiExportTemplate": "// lmDescription \n export const lmFuncName = (params) => {\n    return http.lmMethod(\"lmBaseUrl\" + \"lmUrl\", params)\n}",
+                                      "baseUrl": "/mockjsExport",
+                                      "calledCount": 0,
+                                      "createTime": "2024-09-15T15:01:43.849Z",
+                                      "createUserId": 1,
+                                      "createUsername": "admin",
+                                      "description": "导出mockjs测试，增加参数设置",
+                                      "id": 1,
+                                      "isDeleted": 0,
+                                      "members": [
+                                          {
+                                              "id": 1,
+                                              "isCreateUesr": true,
+                                              "username": "admin"
+                                          }
+                                      ],
+                                      "name": "mockjsExport",
+                                      "proxyInfo": "",
+                                      "sign": "Ccg3hXAjnh8UTkJImEow",
+                                      "updateTime": "2024-09-15T15:01:43.849Z",
+                                      "updateUserId": 1
+                                  },
+                                  "message": "success"
+                              },
+                              "schema": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                      "code": {
+                                          "type": "integer"
+                                      },
+                                      "data": {
+                                          "additionalProperties": false,
+                                          "properties": {
+                                              "apiExportTemplate": {
+                                                  "type": "string"
+                                              },
+                                              "baseUrl": {
+                                                  "type": "string"
+                                              },
+                                              "calledCount": {
+                                                  "type": "integer"
+                                              },
+                                              "createTime": {
+                                                  "format": "date-time",
+                                                  "type": "string"
+                                              },
+                                              "createUserId": {
+                                                  "type": "integer"
+                                              },
+                                              "createUsername": {
+                                                  "type": "string"
+                                              },
+                                              "description": {
+                                                  "type": "string"
+                                              },
+                                              "id": {
+                                                  "type": "integer"
+                                              },
+                                              "isDeleted": {
+                                                  "type": "integer"
+                                              },
+                                              "members": {
+                                                  "items": {
+                                                      "additionalProperties": false,
+                                                      "properties": {
+                                                          "id": {
+                                                              "type": "integer"
+                                                          },
+                                                          "isCreateUesr": {
+                                                              "type": "boolean"
+                                                          },
+                                                          "username": {
+                                                              "type": "string"
+                                                          }
+                                                      },
+                                                      "required": [],
+                                                      "title": "Member",
+                                                      "type": "object"
+                                                  },
+                                                  "type": "array"
+                                              },
+                                              "name": {
+                                                  "type": "string"
+                                              },
+                                              "proxyInfo": {
+                                                  "type": "string"
+                                              },
+                                              "sign": {
+                                                  "type": "string"
+                                              },
+                                              "updateTime": {
+                                                  "format": "date-time",
+                                                  "type": "string"
+                                              },
+                                              "updateUserId": {
+                                                  "type": "integer"
+                                              }
+                                          },
+                                          "required": [],
+                                          "title": "Data",
+                                          "type": "object"
+                                      },
+                                      "message": {
+                                          "type": "string"
+                                      }
+                                  },
+                                  "required": [],
+                                  "title": "LANMockProjectDetailGetRequest",
+                                  "type": "object"
+                              }
+                          }
+                      },
+                      "description": ""
+                  },
+                  "304": {
+                      "content": {
+                          "application/json": {
+                              "example": {
+                                  "code": 200,
+                                  "data": {
+                                      "apiExportTemplate": "// lmDescription \n export const lmFuncName = (params) => {\n    return http.lmMethod(\"lmBaseUrl\" + \"lmUrl\", params)\n}",
+                                      "baseUrl": "/mockjsExport",
+                                      "calledCount": 0,
+                                      "createTime": "2024-09-15T15:01:43.849Z",
+                                      "createUserId": 1,
+                                      "createUsername": "admin",
+                                      "description": "导出mockjs测试，增加参数设置",
+                                      "id": 1,
+                                      "isDeleted": 0,
+                                      "members": [
+                                          {
+                                              "id": 1,
+                                              "isCreateUesr": true,
+                                              "username": "admin"
+                                          }
+                                      ],
+                                      "name": "mockjsExport",
+                                      "sign": "Ccg3hXAjnh8UTkJImEow",
+                                      "updateTime": "2024-09-15T15:01:43.849Z",
+                                      "updateUserId": 1
+                                  },
+                                  "message": "success"
+                              },
+                              "schema": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                      "code": {
+                                          "type": "integer"
+                                      },
+                                      "data": {
+                                          "additionalProperties": false,
+                                          "properties": {
+                                              "apiExportTemplate": {
+                                                  "type": "string"
+                                              },
+                                              "baseUrl": {
+                                                  "type": "string"
+                                              },
+                                              "calledCount": {
+                                                  "type": "integer"
+                                              },
+                                              "createTime": {
+                                                  "format": "date-time",
+                                                  "type": "string"
+                                              },
+                                              "createUserId": {
+                                                  "type": "integer"
+                                              },
+                                              "createUsername": {
+                                                  "type": "string"
+                                              },
+                                              "description": {
+                                                  "type": "string"
+                                              },
+                                              "id": {
+                                                  "type": "integer"
+                                              },
+                                              "isDeleted": {
+                                                  "type": "integer"
+                                              },
+                                              "members": {
+                                                  "items": {
+                                                      "additionalProperties": false,
+                                                      "properties": {
+                                                          "id": {
+                                                              "type": "integer"
+                                                          },
+                                                          "isCreateUesr": {
+                                                              "type": "boolean"
+                                                          },
+                                                          "username": {
+                                                              "type": "string"
+                                                          }
+                                                      },
+                                                      "required": [],
+                                                      "title": "Member",
+                                                      "type": "object"
+                                                  },
+                                                  "type": "array"
+                                              },
+                                              "name": {
+                                                  "type": "string"
+                                              },
+                                              "sign": {
+                                                  "type": "string"
+                                              },
+                                              "updateTime": {
+                                                  "format": "date-time",
+                                                  "type": "string"
+                                              },
+                                              "updateUserId": {
+                                                  "type": "integer"
+                                              }
+                                          },
+                                          "required": [],
+                                          "title": "Data",
+                                          "type": "object"
+                                      },
+                                      "message": {
+                                          "type": "string"
+                                      }
+                                  },
+                                  "required": [],
+                                  "title": "LANMockProjectDetailGetRequest",
+                                  "type": "object"
+                              }
+                          }
+                      },
+                      "description": ""
+                  }
+              },
+              "summary": "Get Lan Mock Project Detail"
+          },
+          "parameters": []
+      },
+      "/lanMock/project/list": {
+          "parameters": [],
+          "post": {
+              "description": "",
+              "operationId": "postLanMockProjectList",
+              "parameters": [],
+              "requestBody": {
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "type": "all"
+                          },
+                          "schema": {
+                              "additionalProperties": false,
+                              "properties": {
+                                  "type": {
+                                      "type": "string"
+                                  }
+                              },
+                              "required": [],
+                              "title": "LANMockProjectListPostRequest",
+                              "type": "object"
+                          }
+                      }
+                  },
+                  "required": true
+              },
+              "responses": {
+                  "201": {
+                      "content": {
+                          "application/json": {
+                              "example": {
+                                  "code": 200,
+                                  "data": [
+                                      {
+                                          "apiExportTemplate": "// lmDescription \n export const lmFuncName = (params) => {\n    return http.lmMethod(\"lmBaseUrl\" + \"lmUrl\", params)\n}",
+                                          "baseUrl": "/mockjsExport",
+                                          "calledCount": 0,
+                                          "createTime": "2024-09-15T15:01:43.849Z",
+                                          "createUserId": 1,
+                                          "description": "导出mockjs测试，增加参数设置",
+                                          "id": 1,
+                                          "isDeleted": 0,
+                                          "name": "mockjsExport",
+                                          "sign": "Ccg3hXAjnh8UTkJImEow",
+                                          "updateTime": "2024-09-15T15:01:43.849Z",
+                                          "updateUserId": 1
+                                      }
+                                  ],
+                                  "message": "success"
+                              },
+                              "schema": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                      "code": {
+                                          "type": "integer"
+                                      },
+                                      "data": {
+                                          "items": {
+                                              "additionalProperties": false,
+                                              "properties": {
+                                                  "apiExportTemplate": {
+                                                      "type": "string"
+                                                  },
+                                                  "baseUrl": {
+                                                      "type": "string"
+                                                  },
+                                                  "calledCount": {
+                                                      "type": "integer"
+                                                  },
+                                                  "createTime": {
+                                                      "format": "date-time",
+                                                      "type": "string"
+                                                  },
+                                                  "createUserId": {
+                                                      "type": "integer"
+                                                  },
+                                                  "description": {
+                                                      "type": "string"
+                                                  },
+                                                  "id": {
+                                                      "type": "integer"
+                                                  },
+                                                  "isDeleted": {
+                                                      "type": "integer"
+                                                  },
+                                                  "name": {
+                                                      "type": "string"
+                                                  },
+                                                  "sign": {
+                                                      "type": "string"
+                                                  },
+                                                  "updateTime": {
+                                                      "format": "date-time",
+                                                      "type": "string"
+                                                  },
+                                                  "updateUserId": {
+                                                      "type": "integer"
+                                                  }
+                                              },
+                                              "required": [],
+                                              "title": "Datum",
+                                              "type": "object"
+                                          },
+                                          "type": "array"
+                                      },
+                                      "message": {
+                                          "type": "string"
+                                      }
+                                  },
+                                  "required": [],
+                                  "title": "LANMockProjectListPostRequest",
+                                  "type": "object"
+                              }
+                          }
+                      },
+                      "description": ""
+                  }
+              },
+              "summary": "Post Lan Mock Project List"
+          }
+      },
+      "/lanMock/project/queryFolderList": {
+          "parameters": [],
+          "post": {
+              "description": "",
+              "operationId": "postLanMockProjectQueryFolderList",
+              "parameters": [],
+              "requestBody": {
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "projectId": 1
+                          },
+                          "schema": {
+                              "additionalProperties": false,
+                              "properties": {
+                                  "projectId": {
+                                      "type": "integer"
+                                  }
+                              },
+                              "required": [],
+                              "title": "LANMockProjectQueryFolderListPostRequest",
+                              "type": "object"
+                          }
+                      }
+                  },
+                  "required": true
+              },
+              "responses": {
+                  "201": {
+                      "content": {
+                          "application/json": {
+                              "example": {
+                                  "code": 200,
+                                  "data": [],
+                                  "message": "success"
+                              },
+                              "schema": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                      "code": {
+                                          "type": "integer"
+                                      },
+                                      "data": {
+                                          "items": {},
+                                          "type": "array"
+                                      },
+                                      "message": {
+                                          "type": "string"
+                                      }
+                                  },
+                                  "required": [],
+                                  "title": "LANMockProjectQueryFolderListPostRequest",
+                                  "type": "object"
+                              }
+                          }
+                      },
+                      "description": ""
+                  }
+              },
+              "summary": "Post Lan Mock Project Query Folder List"
+          }
+      },
+      "/lanMock/project/queryMembers": {
+          "parameters": [],
+          "post": {
+              "description": "",
+              "operationId": "postLanMockProjectQueryMembers",
+              "parameters": [],
+              "requestBody": {
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "projectId": 1
+                          },
+                          "schema": {
+                              "additionalProperties": false,
+                              "properties": {
+                                  "projectId": {
+                                      "type": "integer"
+                                  }
+                              },
+                              "required": [],
+                              "title": "LANMockProjectQueryMembersPostRequest",
+                              "type": "object"
+                          }
+                      }
+                  },
+                  "required": true
+              },
+              "responses": {
+                  "201": {
+                      "content": {
+                          "application/json": {
+                              "example": {
+                                  "code": 200,
+                                  "data": [
+                                      {
+                                          "id": 1,
+                                          "isCreateUser": 1,
+                                          "isDeleted": 0,
+                                          "projectId": 1,
+                                          "userId": 1,
+                                          "username": "admin"
+                                      }
+                                  ],
+                                  "message": "success"
+                              },
+                              "schema": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                      "code": {
+                                          "type": "integer"
+                                      },
+                                      "data": {
+                                          "items": {
+                                              "additionalProperties": false,
+                                              "properties": {
+                                                  "id": {
+                                                      "type": "integer"
+                                                  },
+                                                  "isCreateUser": {
+                                                      "type": "integer"
+                                                  },
+                                                  "isDeleted": {
+                                                      "type": "integer"
+                                                  },
+                                                  "projectId": {
+                                                      "type": "integer"
+                                                  },
+                                                  "userId": {
+                                                      "type": "integer"
+                                                  },
+                                                  "username": {
+                                                      "type": "string"
+                                                  }
+                                              },
+                                              "required": [],
+                                              "title": "Datum",
+                                              "type": "object"
+                                          },
+                                          "type": "array"
+                                      },
+                                      "message": {
+                                          "type": "string"
+                                      }
+                                  },
+                                  "required": [],
+                                  "title": "LANMockProjectQueryMembersPostRequest",
+                                  "type": "object"
+                              }
+                          }
+                      },
+                      "description": ""
+                  }
+              },
+              "summary": "Post Lan Mock Project Query Members"
+          }
+      }
+  },
+  "servers": [
+      {
+          "url": "http://localhost"
+      }
+  ]
+}

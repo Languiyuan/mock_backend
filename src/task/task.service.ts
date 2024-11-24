@@ -12,4 +12,6 @@ export class TasksService {
   async CountAllCallNumber() {
     await this.mockService.flushRedisToDB();
   }
+
+  // 清空上传文件夹
 }
