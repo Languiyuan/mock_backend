@@ -5,37 +5,37 @@ services:
     depends_on: 
         - mock-back-app
     ports:
-      - 80:80
+      - 9704:9704
     networks:
       - common-network
   mock-back-app:
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
+    image: mock-back:production
     depends_on:
-      - mock-mysql-container
-      - mock-redis-container
+      - mysql3307
+      - redis6380
     ports:
-      - 3004:3004
+      - 4399:4399
     networks:
       - common-network
-  mock-mysql-container:
+  mysql3307:
     image: mysql
     ports: 
-      - 3306:3306
+      - 3307:3306
     volumes:
-      - /User/Languiyuan/mysql-data:/var/lib/mysql
+      # - /User/Languiyuan/mysql-data:/var/lib/mysql
+      - E:\\FrontEnd\\项目\\nestjs\\mysql-test:/var/lib/mysql
     environment:
       MYSQL_DATABASE: mock_system
       MYSQL_ROOT_PASSWORD: 123456
     networks:
       - common-network
-  mock-redis-container:
+  redis6380:
     image: redis
     ports: 
-      - 6379:6379
+      - 6380:6379
     volumes:
-      - /User/Languiyuan/redis-data:/data
+      # - /User/Languiyuan/redis-data:/data
+      - E:\\FrontEnd\\项目\\nestjs\\redis-test:/data
       # - E:\\FrontEnd\\项目\\nestjs\\docker\\redis\\conf\\redis.conf:/usr/local/etc/redis/redis.conf
     # command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     networks:
