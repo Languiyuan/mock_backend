@@ -13,6 +13,10 @@ import { HttpService } from '@nestjs/axios';
 import * as swaggerParseMock from 'swagger-parser-lanmock';
 import { ProjectService } from 'src/project/project.service';
 import { ConfigService } from '@nestjs/config';
+import { Har } from 'har-format';
+import { generateSpec } from 'har-to-openapi';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 // interface SingleParamsRule {
 //   name: string;
@@ -53,7 +57,7 @@ export class ApiService {
   private projectService: ProjectService;
 
   // 添加接口
-  async addApi(userId: number, apiDto: ApiDto) {
+  async addApi(userId: number, apiDto: ApiDto, isCover: boolean) {
     // 判断是否已经存在一样的url
     const findApiByUrl = await this.apiRepository.findOneBy({
       url: apiDto.url,
@@ -62,7 +66,14 @@ export class ApiService {
     });
 
     if (findApiByUrl) {
-      throw new HttpException('添加失败,url不能重复', HttpStatus.BAD_REQUEST);
+      // 是否覆盖
+      if (isCover) {
+        apiDto.id = findApiByUrl.id;
+        await this.editApi(userId, apiDto);
+        return '添加（覆盖）成功';
+      } else {
+        throw new HttpException('添加失败,url不能重复', HttpStatus.BAD_REQUEST);
+      }
     }
     // 查project sign
     const project = await this.projectRepository.findOneBy({
@@ -397,6 +408,7 @@ export class ApiService {
     userId: number,
     projectId: number,
     fileData: ApiExportDto[],
+    isCover: boolean,
   ) {
     const resultVo = [];
 
@@ -434,7 +446,7 @@ export class ApiService {
           });
           throw new Error(allValueList.join(','));
         } else {
-          await this.addApi(userId, apiDto);
+          await this.addApi(userId, apiDto, isCover);
           resultVo.push({ url: apiDto.url, status: 'success', error: null });
         }
       } catch (error) {
@@ -454,6 +466,7 @@ export class ApiService {
     userId: number,
     projectId: number,
     useRealData: 'real' | 'mock', // 1 use | 2 not
+    isCover: boolean,
   ) {
     const specs = await swaggerParseMock(
       `${this.configService.get('nest_server_origin')}:${this.configService.get('nest_server_port')}/lanMock/api/getUploadsFile?path=${path}`,
@@ -558,7 +571,7 @@ export class ApiService {
               });
               throw new Error(allValueList.join(','));
             } else {
-              await this.addApi(userId, apiDto);
+              await this.addApi(userId, apiDto, isCover);
               resultVo.push({
                 url: apiDto.url,
                 status: 'success',
@@ -583,5 +596,41 @@ export class ApiService {
     }
 
     return resultVo;
+  }
+
+  async uploadHarFile(
+    userId: number,
+    projectId: number,
+    harData: Har,
+    useRealData: 'real' | 'mock',
+    isCover: boolean,
+  ) {
+    const openapi = await generateSpec(harData, { relaxedMethods: true });
+    // 构建文件名
+    const fileName = `${projectId}-${Date.now()}.json`;
+
+    // 定义保存路径
+    const filePath = path.join(process.cwd(), 'uploads', fileName);
+
+    // 将JSON数据写入文件
+    try {
+      await fs.promises.writeFile(
+        filePath,
+        JSON.stringify(openapi.spec, null, 2),
+      );
+    } catch (error) {
+      throw new HttpException('文件写入失败', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    const result = await this.uploadProjectBySwagger(
+      filePath,
+      userId,
+      projectId,
+      useRealData,
+      isCover,
+    );
+    // 删除文件
+    fs.unlink(filePath);
+    return result;
   }
 }

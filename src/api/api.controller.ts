@@ -7,6 +7,8 @@ import {
   UploadedFile,
   Get,
   Query,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiService } from './api.service';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
@@ -26,7 +28,7 @@ export class ApiController {
   @Post('add')
   @RequireLogin()
   async addApi(@UserInfo('userId') userId: number, @Body() apiDto: ApiDto) {
-    return await this.apiService.addApi(userId, apiDto);
+    return await this.apiService.addApi(userId, apiDto, false);
   }
 
   // 删除接口
@@ -128,14 +130,6 @@ export class ApiController {
     await fs.unlink(filename);
   }
 
-  // @Post('exportProjectAllApiFormMockjs')
-  // @RequireLogin()]
-  // async exportProjectFormMockjs(
-  //   @Body('projectId') projectId: number,
-  // ) {
-  //   const fileString = await this.apiService.exportProjectFormMockjs(projectId)
-  // }
-
   // 导入项目文件 api 并创建相应api
   @Post('uploadProjectFile')
   @RequireLogin()
@@ -143,6 +137,18 @@ export class ApiController {
     FileInterceptor('projectFile', {
       dest: 'uploads',
       limits: { fileSize: 10 * 1024 * 1024 }, // 大小限制10M
+      fileFilter: (req, file, cb) => {
+        if (!file.originalname.match(/\.(json)$/)) {
+          return cb(
+            new HttpException(
+              'Only .json and  files are allowed!',
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            ),
+            false,
+          );
+        }
+        cb(null, true);
+      },
     }),
   )
   async uploadProjectFile(
@@ -151,6 +157,7 @@ export class ApiController {
     @Body('projectId') projectId: number,
     @Body('type') type: string,
     @Body('useRealData') useRealData: 'real' | 'mock', // 1: use 2: not use
+    @Body('isCover') isCover: '-1' | '1', // -1 not | 1 cover
   ) {
     // 读取文件内容
     const resultVo = await fs
@@ -165,6 +172,7 @@ export class ApiController {
               userId,
               projectId,
               useRealData || 'mock',
+              isCover === '1' ? true : false,
             );
 
             return res;
@@ -177,18 +185,22 @@ export class ApiController {
               userId,
               projectId,
               jsonData,
+              isCover === '1' ? true : false,
             );
 
             return res;
           }
 
           if (type === 'har') {
-            // const jsonData = JSON.parse(data);
-            // const res = await this.apiService.uploadHarFile(
-            //   userId,
-            //   projectId,
-            //   jsonData,
-            // );
+            const jsonData = JSON.parse(data);
+            const res = await this.apiService.uploadHarFile(
+              userId,
+              projectId,
+              jsonData,
+              useRealData,
+              isCover === '1' ? true : false,
+            );
+            return res;
           }
         } catch (error) {
           console.error('解析 JSON 时发生错误:', error);
