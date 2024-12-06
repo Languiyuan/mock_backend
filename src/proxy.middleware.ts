@@ -34,7 +34,7 @@ export class ProxyMiddleware implements NestMiddleware {
           changeOrigin: true,
           pathRewrite: function (path) {
             const pathList = path.split('/');
-            const realPath = '/' + pathList.slice(3).join('/');
+            const realPath = `/${pathList[2]}/` + pathList.slice(4).join('/');
             return realPath;
           },
           on: {
@@ -70,7 +70,9 @@ export class ProxyMiddleware implements NestMiddleware {
   }
 
   private isProxy(req: Request): boolean {
-    return req.originalUrl.includes('/lanMock/mock/proxy');
+    const regex =
+      /^\/lanMock\/mock\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/lmproxy.*/;
+    return regex.test(req.originalUrl);
   }
 
   // 获取项目代理信息"
@@ -81,7 +83,7 @@ export class ProxyMiddleware implements NestMiddleware {
       headers: [],
     };
 
-    proxyInfo.projectSign = req.originalUrl.split('/')[4];
+    proxyInfo.projectSign = req.originalUrl.split('/')[3];
     // 验证projectSign的格式来增强安全性。
     if (!/^[a-zA-Z0-9_-]+$/.test(proxyInfo.projectSign)) {
       throw new Error('Invalid project sign format');
