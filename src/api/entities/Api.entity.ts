@@ -53,8 +53,8 @@ export class Api {
   url: string;
 
   @Column({
-    type: 'text',
-    comment: '接口内容最长是100000',
+    type: 'mediumtext',
+    comment: '接口内容最长是100000字节',
   })
   mockRule: string;
 
