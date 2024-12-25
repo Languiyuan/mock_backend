@@ -20,7 +20,7 @@ async function bootstrap() {
   app.enableCors({
     origin: '*', // 从环境变量读取 CORS 来源
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Origin, Content-Type, Accept, Authorization',
+    allowedHeaders: '*',
     credentials: true,
   });
   app.useGlobalPipes(new ValidationPipe());
