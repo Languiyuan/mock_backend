@@ -17,6 +17,7 @@ import { Har } from 'har-format';
 import { generateSpec } from 'har-to-openapi';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { getType } from 'src/utils';
 
 // interface SingleParamsRule {
 //   name: string;
@@ -58,6 +59,10 @@ export class ApiService {
 
   // 添加接口
   async addApi(userId: number, apiDto: ApiDto, isCover: boolean) {
+    if (getType(apiDto.mockRule) !== 'object') {
+      throw new HttpException('mockRule必须是Object', HttpStatus.BAD_REQUEST);
+    }
+
     // 判断是否已经存在一样的url
     const findApiByUrl = await this.apiRepository.findOneBy({
       url: apiDto.url,
@@ -217,6 +222,9 @@ export class ApiService {
 
   // 编辑接口
   async editApi(userId: number, apiDto: ApiDto) {
+    if (getType(apiDto.mockRule) !== 'object') {
+      throw new HttpException('mockRule必须是Object', HttpStatus.BAD_REQUEST);
+    }
     // 判断用户是否有权限 是否是项目成员
     const findMember = await this.userProjectRepository.findOneBy({
       userId,
