@@ -59,7 +59,7 @@ export class ApiService {
 
   // 添加接口
   async addApi(userId: number, apiDto: ApiDto, isCover: boolean) {
-    if (getType(apiDto.mockRule) !== 'object') {
+    if (getType(JSON.parse(apiDto.mockRule)) !== 'object') {
       throw new HttpException('mockRule必须是Object', HttpStatus.BAD_REQUEST);
     }
 
@@ -222,7 +222,7 @@ export class ApiService {
 
   // 编辑接口
   async editApi(userId: number, apiDto: ApiDto) {
-    if (getType(apiDto.mockRule) !== 'object') {
+    if (getType(JSON.parse(apiDto.mockRule)) !== 'object') {
       throw new HttpException('mockRule必须是Object', HttpStatus.BAD_REQUEST);
     }
     // 判断用户是否有权限 是否是项目成员
